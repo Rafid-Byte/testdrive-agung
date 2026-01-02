@@ -1,0 +1,43 @@
+<?php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Supervisor extends Model
+{
+    protected $fillable = [
+        'nama_lengkap',
+        'position',
+        'nomor_hp',
+    ];
+    
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(TestDriveBooking::class);
+    }
+
+    // Accessors
+    public function getTotalBookingsAttribute(): int
+    {
+        return $this->bookings()->count();
+    }
+
+    public function getActiveBookingsAttribute(): int
+    {
+        return $this->bookings()
+            ->whereNotIn('status', ['Selesai', 'Dibatalkan'])
+            ->count();
+    }
+    
+    // Alias untuk compatibility dengan frontend
+    public function getNameAttribute(): string
+    {
+        return $this->nama_lengkap;
+    }
+}
