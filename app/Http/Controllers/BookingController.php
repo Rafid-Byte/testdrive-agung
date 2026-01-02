@@ -771,6 +771,7 @@ class BookingController extends Controller
     }
 
     // ✅ UPDATED: Update Customer Data (SPV/Admin only)
+    // âœ… FIXED: Update Customer Data
     public function updateCustomer(Request $request)
     {
         try {
@@ -781,26 +782,48 @@ class BookingController extends Controller
                 'email' => 'required|email|max:100',
                 'no_ktp' => 'required|string|size:16',
                 'alamat' => 'required|string',
-                'supervisor_user_id' => 'nullable|exists:users,id',  // ✅ Changed from supervisor_id
+                'supervisor_user_id' => 'nullable|exists:users,id',
             ]);
 
+            // âœ… Prepare update data - only include supervisor if provided
+            $updateData = [
+                'nama_lengkap' => $validated['nama_lengkap'],
+                'nomor_telepon' => $validated['nomor_telepon'],
+                'email' => $validated['email'],
+                'no_ktp' => $validated['no_ktp'],
+                'alamat' => $validated['alamat'],
+            ];
+
+            // âœ… Only update supervisor if value is provided
+            if (isset($validated['supervisor_user_id']) && !empty($validated['supervisor_user_id'])) {
+                $updateData['supervisor_user_id'] = $validated['supervisor_user_id'];
+            }
+
             $updated = TestDriveBooking::where('email', $validated['original_email'])
-                ->update([
-                    'nama_lengkap' => $validated['nama_lengkap'],
-                    'nomor_telepon' => $validated['nomor_telepon'],
-                    'email' => $validated['email'],
-                    'no_ktp' => $validated['no_ktp'],
-                    'alamat' => $validated['alamat'],
-                    'supervisor_user_id' => $validated['supervisor_user_id'],  // ✅ Changed from supervisor_id
-                ]);
+                ->update($updateData);
+
+            Log::info('âœ… Customer updated successfully:', [
+                'original_email' => $validated['original_email'],
+                'new_email' => $validated['email'],
+                'updated_count' => $updated
+            ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Data customer berhasil diupdate!',
                 'updated_count' => $updated
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('âŒ Validation error updating customer:', $e->errors());
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
-            Log::error('Error updating customer: ' . $e->getMessage());
+            Log::error('âŒ Error updating customer: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage()
@@ -1053,7 +1076,7 @@ class BookingController extends Controller
     {
         try {
             $booking = PameranBooking::findOrFail($id);
-            
+
             $validated = $request->validate([
                 'nama_pic' => 'sometimes|string|max:100',
                 'nomor_telepon' => 'sometimes|string|max:15',

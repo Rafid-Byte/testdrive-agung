@@ -21,7 +21,7 @@ class CheckSheetController extends Controller
 
         // GET TEST DRIVE BOOKINGS
         $testDriveBookings = TestDriveBooking::with(['supervisor', 'security', 'checksheet'])
-            ->whereNotNull('supervisor_id')
+            ->whereNotNull('supervisor_user_id')
             ->orderBy('tanggal_booking', 'desc')
             ->get()
             ->map(function ($booking) {
