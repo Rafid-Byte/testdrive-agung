@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\CheckSheetController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\PameranInfoController;
 
 // PUBLIC ROUTES
 Route::get('/', function () {
@@ -94,3 +95,13 @@ Route::get('/api/vehicle-status', [BookingController::class, 'getVehicleStatus']
 Route::put('/pameran/{id}', [BookingController::class, 'updatePameranBooking'])
     ->middleware('role:admin,spv')
     ->name('pameran.update');
+
+// PAMERAN INFO ROUTE - Admin & Security only
+Route::middleware(['auth', 'role:admin,security'])->group(function () {
+    Route::get('/pameran-info', [PameranInfoController::class, 'index'])->name('pameran-info');
+    
+    // API: Pameran Info operations
+    Route::get('/api/pameran-info', [PameranInfoController::class, 'getPameranBookings'])->name('api.pameran-info');
+    Route::get('/api/pameran-info/{id}', [PameranInfoController::class, 'show'])->name('api.pameran-info.show');
+    Route::put('/api/pameran-info/{id}/status', [PameranInfoController::class, 'updateStatus'])->name('api.pameran-info.update-status');
+});
