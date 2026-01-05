@@ -148,15 +148,21 @@ class CheckSheetController extends Controller
 
             $currentUser = Auth::user();
 
-            $canView = $currentUser && (
-                $this->userHasRole($currentUser, ['admin', 'spv', 'security']) ||
-                $checksheet->user_id === $currentUser->id
-            );
+            // Check if user is authenticated
+            if (!$currentUser) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized - User not authenticated'
+                ], 401);
+            }
+
+            $canView = $this->userHasRole($currentUser, ['admin', 'spv', 'security']) ||
+                       $checksheet->user_id === $currentUser->id;
 
             if (!$canView) {
                 Log::warning('Unauthorized checksheet access attempt:', [
-                    'user_id' => $currentUser->id,
-                    'user_role' => $currentUser->role,
+                    'user_id' => $currentUser->id ?? 'unknown',
+                    'user_role' => $currentUser->role ?? 'unknown',
                     'checksheet_id' => $id
                 ]);
 
@@ -229,6 +235,14 @@ class CheckSheetController extends Controller
 
             $checksheet = Checksheet::findOrFail($id);
             $currentUser = Auth::user();
+
+            // Check if user is authenticated
+            if (!$currentUser) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized - User not authenticated'
+                ], 401);
+            }
 
             if (!$this->userCanAccessChecksheet($currentUser) && $checksheet->user_id !== $currentUser->id) {
                 return response()->json([
@@ -849,6 +863,15 @@ class CheckSheetController extends Controller
 
             // Check authorization
             $currentUser = Auth::user();
+            
+            // Check if user is authenticated
+            if (!$currentUser) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized - User not authenticated'
+                ], 401);
+            }
+
             if (!$this->userCanAccessChecksheet($currentUser) && $checksheet->user_id !== $currentUser->id) {
                 return response()->json([
                     'success' => false,
@@ -867,7 +890,7 @@ class CheckSheetController extends Controller
                 'checksheet_id' => $id,
                 'booking_id' => $bookingId,
                 'customer' => $customerName,
-                'deleted_by' => $currentUser->email
+                'deleted_by' => $currentUser->email ?? 'unknown'
             ]);
 
             return response()->json([
