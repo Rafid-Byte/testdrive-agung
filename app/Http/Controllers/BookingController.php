@@ -597,108 +597,71 @@ class BookingController extends Controller
     }
 
     // Update Booking Status - Role-based status update dengan validation
-    /**
-     * Update Booking Status - Role-based status update dengan validation
-     * 
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function updateStatus(Request $request, $id)
     {
         try {
             $user = Auth::user();
 
-            // ✅ FIXED: booking_type jadi optional
             $validated = $request->validate([
                 'status' => [
                     'required',
                     'in:Menunggu,Diproses,Dikonfirmasi,Sedang test drive,Sedang Pameran,Selesai,Perawatan,Dibatalkan'
                 ],
-                'booking_type' => 'nullable|in:test_drive,pameran'
+                'booking_type' => 'required|in:test_drive,pameran'
             ]);
 
-            // ✅ CRITICAL FIX: Auto-detect booking type from database if not provided
-            $bookingType = $validated['booking_type'] ?? null;
-            $booking = null;
-
-            if (!$bookingType) {
-                // Try Test Drive first
-                $testDriveBooking = TestDriveBooking::find($id);
-                if ($testDriveBooking) {
-                    $booking = $testDriveBooking;
-                    $bookingType = 'test_drive';
-                } else {
-                    // If not found, try Pameran
-                    $pameranBooking = PameranBooking::find($id);
-                    if ($pameranBooking) {
-                        $booking = $pameranBooking;
-                        $bookingType = 'pameran';
-                    } else {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Booking tidak ditemukan'
-                        ], 404);
-                    }
-                }
+            // Tentukan model berdasarkan booking_type dari request
+            if ($validated['booking_type'] === 'pameran') {
+                $booking = PameranBooking::findOrFail($id);
+                $bookingModel = 'pameran';
             } else {
-                // Booking type provided in request
-                if ($bookingType === 'pameran') {
-                    $booking = PameranBooking::findOrFail($id);
-                } else {
-                    $booking = TestDriveBooking::findOrFail($id);
-                }
+                $booking = TestDriveBooking::findOrFail($id);
+                $bookingModel = 'test_drive';
             }
 
-            Log::info('📄 Update Status Request:', [
+            Log::info('🔄 Update Status Request:', [
                 'booking_id' => $id,
-                'detected_booking_type' => $bookingType,
-                'request_booking_type' => $validated['booking_type'] ?? 'auto-detected',
+                'booking_type' => $validated['booking_type'],
+                'model_used' => $bookingModel,
                 'old_status' => $booking->status,
                 'new_status' => $validated['status'],
-                'user_role' => $user->role,
-                'user_email' => $user->email
+                'user_role' => $user->role
             ]);
 
-            // ✅ FIXED: Validate status based on detected booking type
-            if ($bookingType === 'pameran' && $validated['status'] === 'Sedang test drive') {
+            // Validate status based on booking type
+            if ($validated['booking_type'] === 'pameran' && $validated['status'] === 'Sedang test drive') {
                 return response()->json([
                     'success' => false,
-                    'message' => '❌ Status "Sedang test drive" tidak valid untuk booking Pameran/Movex.' . "\n\n" .
-                        '✅ Gunakan status "Sedang Pameran" untuk booking jenis ini.'
+                    'message' => 'Status "Sedang test drive" tidak valid untuk booking Pameran/Movex.' . "\n" .
+                        'Gunakan status "Sedang Pameran" untuk booking jenis ini.'
                 ], 400);
             }
 
-            if ($bookingType === 'test_drive' && $validated['status'] === 'Sedang Pameran') {
+            if ($validated['booking_type'] === 'test_drive' && $validated['status'] === 'Sedang Pameran') {
                 return response()->json([
                     'success' => false,
-                    'message' => '❌ Status "Sedang Pameran" tidak valid untuk booking Test Drive.' . "\n\n" .
-                        '✅ Gunakan status "Sedang test drive" untuk booking jenis ini.'
+                    'message' => 'Status "Sedang Pameran" tidak valid untuk booking Test Drive.' . "\n" .
+                        'Gunakan status "Sedang test drive" untuk booking jenis ini.'
                 ], 400);
             }
-
-            // ========================================
-            // ROLE-BASED VALIDATION
-            // ========================================
 
             // SPV Validation
             if ($user->role === 'spv') {
                 if ($booking->status !== 'Menunggu') {
                     return response()->json([
                         'success' => false,
-                        'message' => '⚠️ SPV hanya dapat approve/cancel booking dengan status "Menunggu".' . "\n\n" .
-                            '📌 Status booking saat ini: "' . $booking->status . '"' . "\n" .
-                            '📌 Tipe booking: ' . ($bookingType === 'pameran' ? 'Pameran/Movex' : 'Test Drive')
+                        'message' => 'SPV hanya dapat approve/cancel booking dengan status "Menunggu".' . "\n\n" .
+                            'Status booking saat ini: "' . $booking->status . '"'
                     ], 403);
                 }
 
                 if (!in_array($validated['status'], ['Diproses', 'Dibatalkan'])) {
                     return response()->json([
                         'success' => false,
-                        'message' => '⚠️ SPV hanya dapat:' . "\n" .
-                            '✅ Approve ke "Diproses"' . "\n" .
-                            '❌ Cancel ke "Dibatalkan"' . "\n\n" .
-                            '📌 Status yang dipilih: "' . $validated['status'] . '"'
+                        'message' => 'SPV hanya dapat:\n' .
+                            '✅ Approve ke "Diproses"\n' .
+                            '❌ Cancel ke "Dibatalkan"\n\n' .
+                            'Status yang dipilih: "' . $validated['status'] . '"'
                     ], 403);
                 }
             }
@@ -707,17 +670,16 @@ class BookingController extends Controller
                 if (!in_array($booking->status, ['Diproses', 'Dikonfirmasi'])) {
                     return response()->json([
                         'success' => false,
-                        'message' => '⚠️ Branch Manager hanya dapat mengubah booking dengan status "Diproses" atau "Dikonfirmasi".' . "\n\n" .
-                            '📌 Status booking saat ini: "' . $booking->status . '"' . "\n" .
-                            '📌 Tipe booking: ' . ($bookingType === 'pameran' ? 'Pameran/Movex' : 'Test Drive')
+                        'message' => 'Branch Manager hanya dapat mengubah booking dengan status "Diproses" atau "Dikonfirmasi".' . "\n\n" .
+                            'Status booking saat ini: "' . $booking->status . '"'
                     ], 403);
                 }
 
                 if (!in_array($validated['status'], ['Dikonfirmasi', 'Dibatalkan'])) {
                     return response()->json([
                         'success' => false,
-                        'message' => '⚠️ Branch Manager hanya dapat:' . "\n" .
-                            '✅ Approve ke "Dikonfirmasi"' . "\n" .
+                        'message' => 'Branch Manager hanya dapat:\n' .
+                            '✅ Approve ke "Dikonfirmasi"\n' .
                             '❌ Disapprove/Cancel ke "Dibatalkan"'
                     ], 403);
                 }
@@ -726,23 +688,23 @@ class BookingController extends Controller
                     if ($booking->status !== 'Diproses') {
                         return response()->json([
                             'success' => false,
-                            'message' => '⚠️ Branch Manager hanya dapat approve booking dengan status "Diproses".' . "\n\n" .
-                                '📌 Status booking saat ini: "' . $booking->status . '"'
+                            'message' => 'Branch Manager hanya dapat approve booking dengan status "Diproses".' . "\n\n" .
+                                'Status booking saat ini: "' . $booking->status . '"'
                         ], 403);
                     }
                 } elseif ($validated['status'] === 'Dibatalkan') {
                     if (!in_array($booking->status, ['Diproses', 'Dikonfirmasi'])) {
                         return response()->json([
                             'success' => false,
-                            'message' => '⚠️ Branch Manager hanya dapat cancel booking dengan status "Diproses" atau "Dikonfirmasi".' . "\n\n" .
-                                '📌 Status booking saat ini: "' . $booking->status . '"'
+                            'message' => 'Branch Manager hanya dapat cancel booking dengan status "Diproses" atau "Dikonfirmasi".' . "\n\n" .
+                                'Status booking saat ini: "' . $booking->status . '"'
                         ], 403);
                     }
                 }
             }
             // Security Validation
             elseif ($user->role === 'security') {
-                $validInProgressStatus = ($bookingType === 'pameran')
+                $validInProgressStatus = ($validated['booking_type'] === 'pameran')
                     ? 'Sedang Pameran'
                     : 'Sedang test drive';
 
@@ -751,110 +713,59 @@ class BookingController extends Controller
                 if (!in_array($booking->status, $allowedCurrentStatuses)) {
                     return response()->json([
                         'success' => false,
-                        'message' => '⚠️ Security hanya dapat mengubah status mobil yang sudah dikonfirmasi Branch Manager.' . "\n\n" .
-                            '📌 Status booking saat ini: "' . $booking->status . '"' . "\n" .
-                            '📌 Tipe booking: ' . ($bookingType === 'pameran' ? 'Pameran/Movex' : 'Test Drive') . "\n\n" .
-                            '✅ Status yang diizinkan: Dikonfirmasi, ' . $validInProgressStatus . ', Selesai, Perawatan'
+                        'message' => 'Security hanya dapat mengubah status mobil yang sudah dikonfirmasi Branch Manager.' . "\n\n" .
+                            'Status booking saat ini: "' . $booking->status . '"'
                     ], 403);
                 }
 
                 $allowedNewStatuses = [$validInProgressStatus, 'Selesai', 'Perawatan'];
 
                 if (!in_array($validated['status'], $allowedNewStatuses)) {
-                    $statusLabel = ($bookingType === 'pameran')
+                    $statusLabel = ($validated['booking_type'] === 'pameran')
                         ? 'Sedang Pameran'
                         : 'Sedang Test Drive';
 
                     return response()->json([
                         'success' => false,
-                        'message' => '⚠️ Security hanya dapat mengubah status mobil ke:' . "\n" .
-                            '🚗 ' . $statusLabel . "\n" .
-                            '✅ Selesai' . "\n" .
+                        'message' => 'Security hanya dapat mengubah status mobil ke:\n' .
+                            '🚗 ' . $statusLabel . '\n' .
+                            '✅ Selesai\n' .
                             '🔧 Perawatan'
                     ], 403);
                 }
             }
-            // Admin: Full access (no validation)
+            // Admin: Full access
             elseif ($user->role === 'admin') {
                 // Admin can set any status
-                Log::info('✅ Admin full access granted');
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => '❌ Anda tidak memiliki izin untuk mengubah status booking'
+                    'message' => 'Anda tidak memiliki izin untuk mengubah status booking'
                 ], 403);
             }
-
-            // ========================================
-            // UPDATE STATUS
-            // ========================================
 
             $oldStatus = $booking->status;
             $booking->update(['status' => $validated['status']]);
 
-            Log::info('✅ Status updated successfully:', [
+            Log::info('✅ Status updated:', [
                 'booking_id' => $id,
-                'booking_type' => $bookingType,
-                'model_class' => get_class($booking),
+                'booking_type' => $booking instanceof TestDriveBooking ? 'test_drive' : 'pameran',
                 'old_status' => $oldStatus,
                 'new_status' => $validated['status'],
                 'updated_by' => $user->email,
-                'user_role' => $user->role,
-                'timestamp' => now()->toDateTimeString()
+                'user_role' => $user->role
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => '✅ Status berhasil diupdate dari "' . $oldStatus . '" ke "' . $validated['status'] . '"!',
-                'data' => [
-                    'id' => $booking->id,
-                    'booking_type' => $bookingType,
-                    'old_status' => $oldStatus,
-                    'new_status' => $validated['status'],
-                    'updated_by' => $user->name,
-                    'updated_at' => $booking->updated_at->format('d M Y H:i:s')
-                ]
+                'message' => 'Status berhasil diupdate!',
+                'data' => $booking
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('❌ Validation error in updateStatus:', [
-                'booking_id' => $id,
-                'errors' => $e->errors(),
-                'user' => $user->email ?? 'Unknown'
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => '❌ Validasi gagal',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            Log::error('❌ Booking not found:', [
-                'booking_id' => $id,
-                'user' => $user->email ?? 'Unknown'
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => '❌ Booking dengan ID ' . $id . ' tidak ditemukan'
-            ], 404);
         } catch (\Exception $e) {
-            Log::error('❌ Error updating status:', [
-                'booking_id' => $id,
-                'error_message' => $e->getMessage(),
-                'error_line' => $e->getLine(),
-                'error_file' => $e->getFile(),
-                'stack_trace' => $e->getTraceAsString(),
-                'user' => $user->email ?? 'Unknown'
-            ]);
-
+            Log::error('Error updating status: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => '❌ Terjadi kesalahan saat update status: ' . $e->getMessage(),
-                'error_detail' => config('app.debug') ? [
-                    'message' => $e->getMessage(),
-                    'line' => $e->getLine(),
-                    'file' => $e->getFile()
-                ] : null
+                'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
     }

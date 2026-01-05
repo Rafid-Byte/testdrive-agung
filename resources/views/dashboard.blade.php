@@ -3914,8 +3914,6 @@
                                 // Open status modal from management section
                                 openStatusModalFromManagement(booking) {
                                     const originalIndex = this.getOriginalIndex(booking);
-                                    this.selectedBooking = this.bookings[originalIndex];
-                                    this.selectedBooking.booking_type = booking.booking_type;
                                     this.openStatusModal(originalIndex);
                                 },
 
