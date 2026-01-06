@@ -2400,12 +2400,14 @@
                                                     <option value="Menunggu">Menunggu</option>
                                                     <option value="Diproses">Diproses</option>
                                                     <option value="Dikonfirmasi">Dikonfirmasi</option>
-                                                    <template x-if="selectedBooking?.booking_type === 'test_drive'">
-                                                        <option value="Sedang test drive">Sedang test drive</option>
-                                                    </template>
-                                                    <template x-if="selectedBooking?.booking_type === 'pameran'">
-                                                        <option value="Sedang Pameran">Sedang Pameran</option>
-                                                    </template>
+                                                    <option value="Sedang test drive"
+                                                        x-show="selectedBooking?.booking_type === 'test_drive'">
+                                                        Sedang test drive
+                                                    </option>
+                                                    <option value="Sedang Pameran"
+                                                        x-show="selectedBooking?.booking_type === 'pameran'">
+                                                        Sedang Pameran
+                                                    </option>
                                                     <option value="Selesai">Selesai</option>
                                                     <option value="Perawatan">Perawatan</option>
                                                     <option value="Dibatalkan">Dibatalkan</option>
@@ -3914,7 +3916,24 @@
                                 // Open status modal from management section
                                 openStatusModalFromManagement(booking) {
                                     const originalIndex = this.getOriginalIndex(booking);
-                                    this.openStatusModal(originalIndex);
+
+                                    // ✅ FIX: Pass booking_type explicitly
+                                    this.selectedBooking = booking;
+                                    this.selectedBookingIndex = originalIndex;
+
+                                    // Set default status based on role
+                                    const userRole = '{{ auth()->user()->role }}';
+                                    const currentStatus = this.selectedBooking.status;
+
+                                    if (userRole === 'spv') {
+                                        this.newStatus = 'Diproses';
+                                    } else if (userRole === 'branch_manager') {
+                                        this.newStatus = 'Dikonfirmasi';
+                                    } else {
+                                        this.newStatus = currentStatus;
+                                    }
+
+                                    this.statusModal = true;
                                 },
 
                                 get hasActiveFilters() {
