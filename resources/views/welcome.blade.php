@@ -1405,7 +1405,7 @@
                                                 dibooking</span>
                                             <span
                                                 x-show="info.status_code === 'in_use' && info.booking_type === 'test_drive'">
-                                                Sedang test drive</span>
+                                                Sedang digunakan untuk test drive</span>
                                             <span
                                                 x-show="info.status_code === 'in_use' && info.booking_type === 'pameran'">
                                                 Sedang digunakan untuk pameran</span>
