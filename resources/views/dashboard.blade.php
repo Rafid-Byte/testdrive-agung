@@ -3472,8 +3472,18 @@
                                     if (this.selectedBookingIndex !== null && this.newStatus) {
                                         const booking = this.bookings[this.selectedBookingIndex];
 
-                                        // ✅ CRITICAL: Kirim booking_type ke backend
-                                        const bookingType = booking.booking_type || 'test_drive';
+                                        // ✅ CRITICAL: Get booking_type from selectedBooking
+                                        const bookingType = this.selectedBooking?.booking_type || booking
+                                            .booking_type || 'test_drive';
+
+                                        // ✅ DEBUG: Verify before sending
+                                        console.log('🚀 Sending status update:', {
+                                            booking_id: booking.id,
+                                            booking_type: bookingType,
+                                            old_status: booking.status,
+                                            new_status: this.newStatus,
+                                            user_role: '{{ auth()->user()->role }}'
+                                        });
 
                                         // Client-side validation
                                         const userRole = '{{ auth()->user()->role }}';
@@ -3546,7 +3556,7 @@
                                                 },
                                                 body: JSON.stringify({
                                                     status: this.newStatus,
-                                                    booking_type: bookingType
+                                                    booking_type: bookingType // ✅ FIX: Pass correct booking_type
                                                 })
                                             });
 
@@ -3683,7 +3693,7 @@
 
                                 getOriginalIndex(booking) {
                                     return this.bookings.findIndex(b =>
-                                        b.id === booking.id
+                                        b.id === booking.id && b.booking_type === booking.booking_type
                                     );
                                 },
 
@@ -3918,8 +3928,19 @@
                                     const originalIndex = this.getOriginalIndex(booking);
 
                                     // ✅ FIX: Pass booking_type explicitly
-                                    this.selectedBooking = booking;
+                                    this.selectedBooking = {
+                                        ...booking,
+                                        booking_type: booking.booking_type ||
+                                            'test_drive' // ✅ Fallback to test_drive if undefined
+                                    };
                                     this.selectedBookingIndex = originalIndex;
+
+                                    console.log('📋 Selected Booking:', {
+                                        id: this.selectedBooking.id,
+                                        booking_type: this.selectedBooking.booking_type,
+                                        customer: this.selectedBooking.customer,
+                                        status: this.selectedBooking.status
+                                    });
 
                                     // Set default status based on role
                                     const userRole = '{{ auth()->user()->role }}';
