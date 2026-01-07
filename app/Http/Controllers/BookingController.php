@@ -1052,7 +1052,7 @@ class BookingController extends Controller
                         case 'Perawatan':
                             $vehicleStatus[$vehicle] = [
                                 'available' => false,
-                                'status' => 'Mobil Belum Tersedia (Masih Tahap Perawatan)',
+                                'status' => 'Mobil Belum Tersedia',
                                 'status_code' => 'maintenance',
                                 'booking_type' => $bookingType,
                                 'booking_id' => $activeBooking->id,
