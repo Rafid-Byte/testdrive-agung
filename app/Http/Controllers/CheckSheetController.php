@@ -284,7 +284,7 @@ class CheckSheetController extends Controller
                 ->latest()
                 ->get()
                 ->map(function ($checksheet) {
-                    // 🔧 FIX: Ambil status dari booking, bukan dari checksheet
+                    // Dapatkan booking terkait
                     $booking = $checksheet->booking;
 
                     return [
@@ -294,12 +294,10 @@ class CheckSheetController extends Controller
                         'date' => \Carbon\Carbon::parse($checksheet->tanggal_test_drive)->format('d F Y'),
                         'jam_pinjam' => $checksheet->jam_pinjam,
                         'jam_kembali' => $checksheet->jam_kembali,
-                        // ✅ NEW: Tampilkan nama user yang mengisi checksheet
                         'filled_by' => $checksheet->user->name ?? 'Unknown',
                         'filled_by_email' => $checksheet->user->email ?? '-',
                         'security' => $checksheet->booking->security?->name ?? '-',
                         'spv' => $checksheet->booking->supervisor?->name ?? '-',
-
                         // Gunakan status approval dari booking
                         'status' => $booking->isApproved() ? 'approved' : ($booking->isPending() ? 'pending' : 'not_approved'),
                         'status_label' => $booking->isApproved() ? 'Disetujui' : ($booking->isPending() ? 'Menunggu' : 'Dibatalkan'),
@@ -358,7 +356,7 @@ class CheckSheetController extends Controller
             $sheet->setCellValue('A2', 'Agung Toyota Jambi Pal 10');
             $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-            // Mulai dari row 4, langsung ke form data (TIDAK ada Customer & Mobil terpisah)
+            // Mulai dari row 4, langsung ke form data
             $row = 4;
 
             // Baris 1: Nama Customer & Jam Kembali
@@ -570,7 +568,6 @@ class CheckSheetController extends Controller
     }
 
     // HELPER METHODS
-
     private function getKondisi($checksheet, $item, $stage)
     {
         $baik = $checksheet->{$item . '_' . $stage . '_baik'};
@@ -584,8 +581,6 @@ class CheckSheetController extends Controller
     // Bahan bakar method yang benar
     private function getBahanBakar($checksheet, $stage)
     {
-        // pinjam -> bahan_bakar_pinjam_1/2/3/4
-        // kembali -> bahan_bakar_pinjam_kembali_1/2/3/4
         $prefix = ($stage === 'pinjam') ? 'bahan_bakar_pinjam_' : 'bahan_bakar_pinjam_kembali_';
 
         if ($checksheet->{$prefix . '1'}) return '1 Kotak';
@@ -697,7 +692,6 @@ class CheckSheetController extends Controller
     }
 
     // Get checksheet summary by customer email 
-
     public function getChecksheetSummaryByEmail($email)
     {
         try {
@@ -855,7 +849,6 @@ class CheckSheetController extends Controller
     }
 
     // Delete checksheet
-
     public function destroy($id)
     {
         try {
