@@ -9,17 +9,14 @@ use Illuminate\Support\Facades\Auth;
 
 class PameranInfoController extends Controller
 {
-    /**
-     * Display the pameran info page
-     */
+
+    // Display the pameran info page
     public function index()
     {
         return view('pameran-info');
     }
 
-    /**
-     * Get all approved pameran bookings (API endpoint)
-     */
+    // Get all approved pameran bookings (API endpoint)
     public function getPameranBookings(Request $request)
     {
         try {
@@ -93,9 +90,7 @@ class PameranInfoController extends Controller
         }
     }
 
-    /**
-     * Update pameran booking status
-     */
+    // Update status of pameran booking
     public function updateStatus(Request $request, $id)
     {
         try {
@@ -135,9 +130,7 @@ class PameranInfoController extends Controller
         }
     }
 
-    /**
-     * Get booking details
-     */
+    // Get details of pameran booking
     public function show($id)
     {
         try {
