@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
-    // Get All Bookings, Branch Manager filter untuk approval workflow
+    // Get All Bookings
     public function index()
     {
         try {
@@ -20,7 +20,7 @@ class BookingController extends Controller
             // TEST DRIVE BOOKINGS
             $testDriveQuery = TestDriveBooking::with(['supervisor', 'security', 'salesUser']);
 
-            // ✅ FIXED: Filter based on user role
+            // Filter based on user role
             if ($user->role === 'branch_manager') {
                 $testDriveQuery->whereIn('status', [
                     'Diproses',
@@ -39,18 +39,16 @@ class BookingController extends Controller
                     'Perawatan'
                 ]);
             } elseif ($user->role === 'spv') {
-                // ✅ SPV can see ALL bookings assigned to them (full visibility)
-                // Frontend will handle button disable logic to prevent unauthorized status changes
-                // This provides transparency and accountability for SPV
+
                 $testDriveQuery->where('supervisor_user_id', $user->id)
                     ->whereIn('status', [
-                        'Menunggu',           // ✅ SPV can approve/cancel
-                        'Diproses',           // 👁️ Read-only (approved by SPV, waiting for Branch Manager)
-                        'Dikonfirmasi',       // 👁️ Read-only (approved by Branch Manager)
-                        'Sedang test drive',  // 👁️ Read-only (being executed by Security)
-                        'Selesai',            // 👁️ Read-only (completed)
-                        'Perawatan',          // 👁️ Read-only (in maintenance)
-                        'Dibatalkan'          // 👁️ Read-only (cancelled)
+                        'Menunggu',           
+                        'Diproses',           
+                        'Dikonfirmasi',       
+                        'Sedang test drive',  
+                        'Selesai',            
+                        'Perawatan',          
+                        'Dibatalkan'          
                     ]);
 
                 Log::info('SPV Filter Applied for Test Drive:', [
@@ -90,8 +88,8 @@ class BookingController extends Controller
                         'approval_status' => $approvalStatus,
                         'approval_label' => $approvalLabel,
                         'is_approved' => ($approvalStatus === 'approved'),
-                        'spv' => $booking->supervisor->name ?? '-',  // ✅ Changed from nama_lengkap to name
-                        'security' => $booking->security->name ?? '-',  // ✅ Changed from nama_lengkap to name
+                        'spv' => $booking->supervisor->name ?? '-',  
+                        'security' => $booking->security->name ?? '-',  
                         'sales_name' => $booking->sales_name,
                         'sales_phone' => $booking->sales_phone,
                         'sales_spv_name' => $booking->salesUser->name ?? '-',
@@ -115,18 +113,16 @@ class BookingController extends Controller
             } elseif ($user->role === 'security') {
                 $pameranQuery->whereIn('status', ['Dikonfirmasi', 'Sedang Pameran', 'Selesai', 'Perawatan']);
             } elseif ($user->role === 'spv') {
-                // ✅ SPV can see ALL bookings assigned to them (full visibility)
-                // Frontend will handle button disable logic to prevent unauthorized status changes
-                // This provides transparency and accountability for SPV
+
                 $pameranQuery->where('supervisor_user_id', $user->id)
                     ->whereIn('status', [
-                        'Menunggu',        // ✅ SPV can approve/cancel
-                        'Diproses',        // 👁️ Read-only (approved by SPV, waiting for Branch Manager)
-                        'Dikonfirmasi',    // 👁️ Read-only (approved by Branch Manager)
-                        'Sedang Pameran',  // 👁️ Read-only (being executed by Security)
-                        'Selesai',         // 👁️ Read-only (completed)
-                        'Perawatan',       // 👁️ Read-only (in maintenance)
-                        'Dibatalkan'       // 👁️ Read-only (cancelled)
+                        'Menunggu',        
+                        'Diproses',        
+                        'Dikonfirmasi',    
+                        'Sedang Pameran',  
+                        'Selesai',         
+                        'Perawatan',       
+                        'Dibatalkan'       
                     ]);
 
                 Log::info('SPV Filter Applied for Pameran:', [
@@ -151,8 +147,8 @@ class BookingController extends Controller
                         'date' => $booking->formatted_date,
                         'rawDate' => $booking->tanggal_booking,
                         'status' => $booking->status,
-                        'spv' => $booking->supervisor->name ?? '-',  // ✅ Changed from nama_lengkap to name
-                        'security' => $booking->security->name ?? '-',  // ✅ Changed from nama_lengkap to name
+                        'spv' => $booking->supervisor->name ?? '-',
+                        'security' => $booking->security->name ?? '-',
                         'sales_spv_name' => $booking->salesUser->name ?? '-',
                         'sales_name' => $booking->salesUser->name ?? '-',
                         'sales_phone' => $booking->salesUser->email ?? '-',
@@ -191,7 +187,7 @@ class BookingController extends Controller
         }
     }
 
-    // ✅ UPDATED: Get Staff Data from users table
+    // Get Staff Data from users table
     public function getStaffData()
     {
         try {
@@ -259,8 +255,8 @@ class BookingController extends Controller
                         'email' => $booking->email,
                         'ktp' => $booking->no_ktp,
                         'address' => $booking->alamat,
-                        'assignedSPV' => $booking->supervisor->name ?? '-',  // ✅ Changed from nama_lengkap to name
-                        'assignedSecurity' => $booking->security->name ?? '-',  // ✅ Changed from nama_lengkap to name
+                        'assignedSPV' => $booking->supervisor->name ?? '-',
+                        'assignedSecurity' => $booking->security->name ?? '-',
                         'totalBookings' => 0,
                         'lastCar' => null,
                         'bookingHistory' => [],
@@ -313,7 +309,7 @@ class BookingController extends Controller
         }
     }
 
-    // ✅ UPDATED: Store Manual Booking (SPV/Admin Only)
+    // Store Manual Booking (SPV/Admin Only)
     public function storeManual(Request $request)
     {
         try {
@@ -326,8 +322,8 @@ class BookingController extends Controller
                 'alamat' => 'required|string',
                 'mobil_test_drive' => 'required|string|max:100',
                 'tanggal_booking' => 'required|date',
-                'supervisor_user_id' => 'required|exists:users,id',  // ✅ Changed from supervisor_id
-                'security_user_id' => 'nullable|exists:users,id',  // ✅ Changed from security_id
+                'supervisor_user_id' => 'required|exists:users,id',
+                'security_user_id' => 'nullable|exists:users,id',
                 'sales_name' => 'nullable|string|max:100',
                 'sales_phone' => 'nullable|string|max:15',
                 'test_drive_time' => 'nullable',
@@ -361,7 +357,7 @@ class BookingController extends Controller
         }
     }
 
-    // ✅ UPDATED: Store Booking from Welcome Page (Sales)
+    // Store Booking from Welcome Page (Sales)
     public function store(Request $request)
     {
         try {
@@ -435,7 +431,7 @@ class BookingController extends Controller
                 'spv_name' => $selectedSPV->name
             ]);
 
-            // ✅ FIXED: Create booking with supervisor_user_id
+            // Create booking with supervisor_user_id
             $booking = TestDriveBooking::create([
                 'nama_lengkap' => $validated['customer_name'],
                 'nomor_telepon' => $validated['phone'],
@@ -445,8 +441,8 @@ class BookingController extends Controller
                 'mobil_test_drive' => $validated['car'],
                 'tanggal_booking' => now()->toDateString(),
                 'status' => 'Menunggu',
-                'supervisor_user_id' => $selectedSPV->id,  // ✅ Changed from supervisor_id
-                'security_user_id' => null,  // ✅ Changed from security_id
+                'supervisor_user_id' => $selectedSPV->id,
+                'security_user_id' => null,
                 'sales_user_id' => $validated['sales_user_id'],
                 'sales_name' => $validated['sales_name'],
                 'sales_phone' => $validated['sales_phone'],
@@ -486,7 +482,7 @@ class BookingController extends Controller
         }
     }
 
-    // ✅ UPDATED: Store Pameran/Movex Booking
+    // Store Pameran/Movex Booking
     private function storePameranBooking(Request $request)
     {
         try {
@@ -517,7 +513,7 @@ class BookingController extends Controller
                 ], 400);
             }
 
-            // ✅ FIXED: Create pameran booking with supervisor_user_id
+            // Create pameran booking with supervisor_user_id
             $booking = PameranBooking::create([
                 'nama_pic' => $validated['pic_name'],
                 'nomor_telepon' => $validated['pic_phone'],
@@ -530,8 +526,8 @@ class BookingController extends Controller
                 'tanggal_mulai' => $validated['start_date'],
                 'tanggal_selesai' => $validated['end_date'],
                 'status' => 'Menunggu',
-                'supervisor_user_id' => $selectedSPV->id,  // ✅ Changed from supervisor_id
-                'security_user_id' => null,  // ✅ Changed from security_id
+                'supervisor_user_id' => $selectedSPV->id,
+                'security_user_id' => null,
                 'sales_user_id' => $validated['sales_user_id'],
                 'booking_type' => 'pameran'
             ]);
@@ -568,10 +564,7 @@ class BookingController extends Controller
         }
     }
 
-    /**
-     * Get SPV List untuk Sales Booking Form
-     * PUBLIC: Tidak perlu auth karena diakses dari welcome page
-     */
+    // Get SPV List untuk Sales Booking Form
     public function getSPVList(Request $request)
     {
         try {
@@ -621,7 +614,7 @@ class BookingController extends Controller
                 'booking_type' => 'required|in:test_drive,pameran'
             ]);
 
-            // ✅ FIX: Query HANYA tabel yang sesuai dengan booking_type dari frontend
+            // Query HANYA tabel yang sesuai dengan booking_type dari frontend
             if ($validated['booking_type'] === 'test_drive') {
                 $booking = TestDriveBooking::find($id);
                 $bookingTypeName = 'Test Drive';
@@ -646,7 +639,7 @@ class BookingController extends Controller
                 'user_role' => $user->role
             ]);
 
-            // ✅ VALIDATE: Status must match booking type
+            // VALIDATE: Status must match booking type
             if ($validated['booking_type'] === 'pameran' && $validated['status'] === 'Sedang test drive') {
                 return response()->json([
                     'success' => false,
@@ -661,9 +654,7 @@ class BookingController extends Controller
                 ], 400);
             }
 
-            // ==========================================
             // BRANCH MANAGER - SPECIAL HANDLING
-            // ==========================================
             if ($user->role === 'branch_manager') {
                 // Branch Manager can ONLY set Dikonfirmasi or Dibatalkan
                 if (!in_array($validated['status'], ['Dikonfirmasi', 'Dibatalkan'])) {
@@ -688,7 +679,7 @@ class BookingController extends Controller
                     ], 403);
                 }
 
-                // ✅ APPROVED - Update and return immediately
+                // APPROVED - Update and return immediately
                 $booking->update(['status' => $validated['status']]);
 
                 Log::info('✅ Status updated by Branch Manager', [
@@ -704,9 +695,7 @@ class BookingController extends Controller
                 ]);
             }
 
-            // ==========================================
             // SPV VALIDATION
-            // ==========================================
             if ($user->role === 'spv') {
                 if ($booking->status !== 'Menunggu') {
                     return response()->json([
@@ -732,9 +721,7 @@ class BookingController extends Controller
                 ]);
             }
 
-            // ==========================================
             // SECURITY VALIDATION
-            // ==========================================
             if ($user->role === 'security') {
                 $validInProgressStatus = ($validated['booking_type'] === 'pameran') ? 'Sedang Pameran' : 'Sedang test drive';
                 $allowedStatuses = [$validInProgressStatus, 'Selesai', 'Perawatan'];
@@ -763,9 +750,7 @@ class BookingController extends Controller
                 ]);
             }
 
-            // ==========================================
             // ADMIN - FULL ACCESS
-            // ==========================================
             if ($user->role === 'admin') {
                 $booking->update(['status' => $validated['status']]);
                 Log::info('✅ Status updated by Admin');
@@ -777,9 +762,7 @@ class BookingController extends Controller
                 ]);
             }
 
-            // ==========================================
             // UNAUTHORIZED ROLE
-            // ==========================================
             return response()->json([
                 'success' => false,
                 'message' => 'Anda tidak memiliki izin untuk mengubah status booking'
@@ -795,8 +778,7 @@ class BookingController extends Controller
         }
     }
 
-    // ✅ UPDATED: Update Customer Data (SPV/Admin only)
-    // âœ… FIXED: Update Customer Data
+    // Update Customer Data (SPV/Admin only)
     public function updateCustomer(Request $request)
     {
         try {
@@ -810,7 +792,7 @@ class BookingController extends Controller
                 'supervisor_user_id' => 'nullable|exists:users,id',
             ]);
 
-            // âœ… Prepare update data - only include supervisor if provided
+            // Prepare update data - only include supervisor if provided
             $updateData = [
                 'nama_lengkap' => $validated['nama_lengkap'],
                 'nomor_telepon' => $validated['nomor_telepon'],
@@ -819,7 +801,7 @@ class BookingController extends Controller
                 'alamat' => $validated['alamat'],
             ];
 
-            // âœ… Only update supervisor if value is provided
+            // Only update supervisor if value is provided
             if (isset($validated['supervisor_user_id']) && !empty($validated['supervisor_user_id'])) {
                 $updateData['supervisor_user_id'] = $validated['supervisor_user_id'];
             }
@@ -949,10 +931,7 @@ class BookingController extends Controller
         }
     }
 
-    /**
-     * Get real-time vehicle status with detailed logic
-     * PUBLIC: Accessible without authentication
-     */
+    // Get Vehicle Status
     public function getVehicleStatus()
     {
         try {
@@ -1094,9 +1073,7 @@ class BookingController extends Controller
         }
     }
 
-    /**
-     * ✅ NEW: Update Pameran Booking (Admin/SPV Only)
-     */
+    // Update Pameran Booking (SPV/Admin only)
     public function updatePameranBooking(Request $request, $id)
     {
         try {
@@ -1112,8 +1089,8 @@ class BookingController extends Controller
                 'lokasi_acara' => 'sometimes|string|max:255',
                 'tanggal_mulai' => 'sometimes|date',
                 'tanggal_selesai' => 'sometimes|date|after_or_equal:tanggal_mulai',
-                'supervisor_user_id' => 'sometimes|exists:users,id',  // ✅ Changed from supervisor_id
-                'security_user_id' => 'sometimes|exists:users,id',  // ✅ Changed from security_id
+                'supervisor_user_id' => 'sometimes|exists:users,id',
+                'security_user_id' => 'sometimes|exists:users,id',
                 'status' => 'sometimes|in:Menunggu,Diproses,Dikonfirmasi,Sedang Pameran,Selesai,Perawatan,Dibatalkan'
             ]);
 
