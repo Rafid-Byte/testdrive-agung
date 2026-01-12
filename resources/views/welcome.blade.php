@@ -180,7 +180,7 @@
 
                             <button @click="openQuickBooking('test_drive'); showQuickAction = false"
                                 class="w-full px-6 py-4 text-left hover:bg-gray-50 transition border-b border-gray-100 flex items-center">
-                                <span class="text-2xl mr-3">🚗</span>
+                                <span class="text-2xl mr-3">🚘</span>
                                 <div>
                                     <p class="font-semibold text-gray-900">Booking Test Drive</p>
                                     <p class="text-xs text-gray-500">Jadwalkan test drive langsung</p>
