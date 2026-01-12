@@ -232,7 +232,7 @@
                         [
                             'name' => 'Toyota Hilux Rangga',
                             'image' => 'img\Toyota Rangga.webp',
-                            'description' => 'Pick-up tangguh dengan kekuatan maksimal dan kenyamanan modern.',
+                            'description' => 'Pick-up tangguh dengan kekuatan maksimal dan modern.',
                         ],
                         [
                             'name' => 'Toyota Raize Abu Abu',
