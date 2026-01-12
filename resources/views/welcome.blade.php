@@ -678,7 +678,20 @@
                         return;
                     }
 
-                    // If authenticated and authorized, open booking modal
+                    // Check vehicle availability status
+                    const unitInfo = this.getUnitInfo(carName);
+                    if (!unitInfo.available || unitInfo.status_code !== 'available') {
+                        this.showAlert(
+                            '🚫 Kendaraan Tidak Tersedia!\n\n' +
+                            'Kendaraan: ' + carName + '\n' +
+                            'Status: ' + unitInfo.status + '\n\n' +
+                            'Mohon pilih kendaraan lain yang tersedia atau tunggu hingga kendaraan ini tersedia kembali.',
+                            'error'
+                        );
+                        return;
+                    }
+
+                    // If authenticated, authorized, and vehicle is available, open booking modal
                     this.selectedCar = carName;
                     this.isCarLocked = true;
                     this.showModal = true;
