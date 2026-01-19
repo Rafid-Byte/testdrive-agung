@@ -1,14 +1,11 @@
 <x-layouts.app :title="'Dashboard'">
     <div x-data="bookingDashboard" x-init="init()"
         class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-all duration-300">
-        {{-- Sidebar Navigation --}}
         <div class="flex">
-            {{-- Sidebar --}}
             <aside class="fixed left-0 top-0 z-40 h-screen shadow-2xl transition-transform duration-300"
                 :class="sidebarOpen ? 'translate-x-0 w-72' : '-translate-x-full w-72'">
                 <div
                     class="h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col">
-                    {{-- Logo Section --}}
                     <div class="px-6 py-6 border-b border-gray-200 dark:border-gray-700">
                         <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 group">
                             <div
@@ -28,7 +25,6 @@
                         </a>
                     </div>
 
-                    {{-- Navigation Menu --}}
                     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                         <div class="mb-4">
                             <p
@@ -56,10 +52,10 @@
                             class="flex items-center px-4 py-3.5 text-gray-900 dark:text-white bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl border border-blue-200 dark:border-blue-800 group transition-all duration-200 shadow-sm">
                             <div
                                 class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center mr-3 shadow-md group-hover:shadow-lg transition-shadow">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
                                     </path>
                                 </svg>
                             </div>
@@ -99,7 +95,6 @@
                         @endif
                     </nav>
 
-                    {{-- User Profile Section --}}
                     <div
                         class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                         <div class="mb-3">
@@ -154,16 +149,13 @@
                 </div>
             </aside>
 
-            {{-- Overlay for mobile when sidebar is open --}}
             <div x-show="sidebarOpen" @click="sidebarOpen = false"
                 x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0"
                 x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300"
                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                 class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
 
-            {{-- Main Content --}}
             <div class="flex-1 transition-all duration-300" :class="sidebarOpen ? 'lg:ml-72' : 'lg:ml-0'">
-                {{-- Top Navigation Bar --}}
                 <nav
                     class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 px-6 py-4 sticky top-0 z-30 shadow-sm">
                     <div class="flex items-center justify-between">
@@ -178,7 +170,6 @@
                         </div>
 
                         <div class="flex items-center gap-3">
-                            {{-- Dark Mode Toggle --}}
                             <button @click="toggleTheme()"
                                 class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 transition hover:bg-gray-300 dark:hover:bg-gray-600">
                                 <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor"
@@ -199,10 +190,8 @@
                     </div>
                 </nav>
 
-                {{-- Page Content --}}
                 <div class="p-6 lg:p-8">
                     <div class="max-w-7xl mx-auto space-y-6">
-                        {{-- Success & Error Messages --}}
                         @if (session('success'))
                             <div
                                 class="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-l-4 border-green-500 rounded-lg shadow-sm">
@@ -232,17 +221,13 @@
                             </div>
                         @endif
 
-                        {{-- UPDATED Management Booking Section --}}
                         <div
                             class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-600 shadow-lg mb-8">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Management Booking
                                 </h2>
 
-                                {{-- Toggle Booking Type --}}
                                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-
-                                    {{-- Toggle Booking Type untuk MANAGEMENT BOOKING --}}
                                     <div class="flex items-center gap-3">
                                         <div
                                             class="inline-flex rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-1">
@@ -264,7 +249,6 @@
                                 </div>
                             </div>
 
-                            {{-- Search & Count --}}
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-4">
                                 <div class="relative flex-1">
                                     <input x-model="managementSearchQuery" type="text"
@@ -284,14 +268,12 @@
                                 </span>
                             </div>
 
-                            {{-- Active Filters & Sort Display --}}
                             <div x-show="managementSPVFilter || managementSPVSort || managementStatusFilter || managementStatusSort"
                                 class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="text-xs font-semibold text-blue-700 dark:text-blue-300">Filter
                                         Aktif:</span>
 
-                                    {{-- SPV Filter --}}
                                     <template x-if="managementSPVFilter">
                                         <span
                                             class="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
@@ -308,7 +290,6 @@
                                         </span>
                                     </template>
 
-                                    {{-- SPV Sort --}}
                                     <template x-if="managementSPVSort">
                                         <span
                                             class="inline-flex items-center gap-1 px-2 py-1 bg-purple-600 text-white text-xs font-medium rounded-full">
@@ -325,7 +306,6 @@
                                         </span>
                                     </template>
 
-                                    {{-- Status Filter --}}
                                     <template x-if="managementStatusFilter">
                                         <span
                                             class="inline-flex items-center gap-1 px-2 py-1 bg-green-600 text-white text-xs font-medium rounded-full">
@@ -342,7 +322,6 @@
                                         </span>
                                     </template>
 
-                                    {{-- Status Sort --}}
                                     <template x-if="managementStatusSort">
                                         <span
                                             class="inline-flex items-center gap-1 px-2 py-1 bg-indigo-600 text-white text-xs font-medium rounded-full">
@@ -360,7 +339,6 @@
                                         </span>
                                     </template>
 
-                                    {{-- Clear All Button --}}
                                     <button type="button"
                                         @click.prevent.stop="
                                             managementSPVFilter = '';
@@ -381,7 +359,6 @@
                                 </div>
                             </div>
 
-                            {{-- TEST DRIVE MANAGEMENT TABLE - Desktop --}}
                             <div x-show="managementViewType === 'test_drive'" class="hidden lg:block overflow-x-auto">
                                 <table class="w-full table-fixed">
                                     <thead>
@@ -430,7 +407,6 @@
                                                                         'text-gray-900 dark:text-gray-100'">
                                                                     Z <- A </button>
                                                             </div>
-                                                            <!-- Filter by SPV (hanya untuk non-SPV users) -->
                                                             <div x-show="'{{ auth()->user()->role }}' !== 'spv'"
                                                                 class="py-2 border-t border-gray-200 dark:border-gray-600">
                                                                 <p
@@ -446,7 +422,6 @@
                                                                     All SPV
                                                                 </button>
 
-                                                                {{-- Dynamic SPV List --}}
                                                                 <template x-for="spv in uniqueSPVList"
                                                                     :key="spv">
                                                                     <button
@@ -500,7 +475,6 @@
                                                             class="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 z-[200]"
                                                             style="display: none;">
 
-                                                            {{-- Filter by Status --}}
                                                             <div class="py-2">
                                                                 <p
                                                                     class="px-4 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
@@ -576,7 +550,6 @@
                                                                 </button>
                                                             </div>
 
-                                                            {{-- Clear Filter --}}
                                                             <div
                                                                 class="py-2 border-t border-gray-200 dark:border-gray-600">
                                                                 <button
@@ -598,7 +571,6 @@
                                         <template x-for="booking in paginatedManagementBookings"
                                             :key="booking.id">
                                             <tr class="h-20">
-                                                {{-- Tipe Booking --}}
                                                 <td class="px-4 py-3">
                                                     <span
                                                         class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
@@ -607,7 +579,6 @@
                                                 </td>
 
                                                 <td class="px-4 py-3">
-                                                    {{-- ✅ Show Sales for SPV, SPV for others --}}
                                                     <template x-if="'{{ auth()->user()->role }}' === 'spv'">
                                                         <div>
                                                             <div class="text-sm font-medium text-gray-900 dark:text-gray-100"
@@ -627,7 +598,6 @@
                                                         x-text="booking.date"></div>
                                                 </td>
 
-                                                {{-- Data Booking Button --}}
                                                 <td class="px-4 py-3">
                                                     <button @click="openManagementDetailModal(booking)"
                                                         class="px-4 py-2 bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition">
@@ -635,7 +605,6 @@
                                                     </button>
                                                 </td>
 
-                                                {{-- Status --}}
                                                 <td class="px-4 py-3 text-center">
                                                     <span
                                                         class="px-3 py-1 inline-flex text-xs font-semibold rounded-full whitespace-nowrap"
@@ -659,13 +628,12 @@
                                                 </td>
                                                 <td class="px-4 py-3 text-center">
                                                     <button @click="openStatusModalFromManagement(booking)"
-                                                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm underline">
+                                                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
                                                         Ubah Status
                                                     </button>
                                                 </td>
                                             </tr>
                                         </template>
-                                        {{-- Empty rows to maintain table height --}}
                                         <template
                                             x-for="i in (managementItemsPerPage - paginatedManagementBookings.length)"
                                             :key="'empty-' + i">
@@ -679,12 +647,10 @@
                                 </table>
                             </div>
 
-                            {{-- TEST DRIVE MANAGEMENT CARDS - Mobile & Tablet --}}
                             <div x-show="managementViewType === 'test_drive'" class="lg:hidden space-y-3">
                                 <template x-for="booking in paginatedManagementBookings" :key="booking.id">
                                     <div
                                         class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                                        {{-- Header --}}
                                         <div class="flex items-start justify-between mb-3">
                                             <span
                                                 class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -706,7 +672,6 @@
                                             </span>
                                         </div>
 
-                                        {{-- SPV Info --}}
                                         <div class="mb-3">
                                             <template x-if="'{{ auth()->user()->role }}' === 'spv'">
                                                 <div>
@@ -734,7 +699,6 @@
                                                 x-text="booking.date"></div>
                                         </div>
 
-                                        {{-- Actions --}}
                                         <div class="flex gap-2">
                                             <button @click="openManagementDetailModal(booking)"
                                                 class="flex-1 px-3 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-lg transition">
@@ -764,7 +728,6 @@
                                 </template>
                             </div>
 
-                            {{-- PAMERAN MANAGEMENT TABLE - Desktop --}}
                             <div x-show="managementViewType === 'pameran'" class="hidden lg:block overflow-x-auto">
                                 <table class="w-full table-fixed">
                                     <thead>
@@ -831,7 +794,6 @@
                                                                     All SPV
                                                                 </button>
 
-                                                                {{-- Dynamic SPV List --}}
                                                                 <template x-for="spv in uniqueSPVList"
                                                                     :key="spv">
                                                                     <button
@@ -845,7 +807,6 @@
                                                                 </template>
                                                             </div>
 
-                                                            <!-- Clear All -->
                                                             <div
                                                                 class="py-2 border-t border-gray-200 dark:border-gray-600">
                                                                 <button
@@ -884,7 +845,6 @@
                                                             class="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 z-[200]"
                                                             style="display: none;">
 
-                                                            {{-- Filter by Status --}}
                                                             <div class="py-2">
                                                                 <p
                                                                     class="px-4 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
@@ -922,11 +882,15 @@
                                                                     Dikonfirmasi
                                                                 </button>
                                                                 <button
-                                                                    @click="filterManagementByStatus('Sedang test drive'); open = false"
+                                                                    @click="filterManagementByStatus(managementViewType === 'pameran' ? 'Sedang Pameran' : 'Sedang test drive'); open = false"
                                                                     class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
-                                                                    :class="managementStatusFilter === 'Sedang test drive' ?
-                                                                        'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
-                                                                        'text-gray-900 dark:text-gray-100'">
+                                                                    :class="(managementViewType === 'pameran' &&
+                                                                        managementStatusFilter === 'Sedang Pameran') ||
+                                                                    (managementViewType === 'test_drive' &&
+                                                                        managementStatusFilter === 'Sedang test drive'
+                                                                        ) ?
+                                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                                    'text-gray-900 dark:text-gray-100'">
                                                                     <span
                                                                         x-show="managementViewType === 'test_drive'">Sedang
                                                                         Test Drive</span>
@@ -960,7 +924,6 @@
                                                                 </button>
                                                             </div>
 
-                                                            {{-- Clear Filter --}}
                                                             <div
                                                                 class="py-2 border-t border-gray-200 dark:border-gray-600">
                                                                 <button
@@ -1032,13 +995,12 @@
                                                 </td>
                                                 <td class="px-4 py-3 text-center">
                                                     <button @click="openStatusModalFromManagement(booking)"
-                                                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm underline">
+                                                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">
                                                         Ubah Status
                                                     </button>
                                                 </td>
                                             </tr>
                                         </template>
-                                        {{-- Empty rows to maintain table height --}}
                                         <template
                                             x-for="i in (managementItemsPerPage - paginatedManagementBookings.length)"
                                             :key="'empty-' + i">
@@ -1052,12 +1014,10 @@
                                 </table>
                             </div>
 
-                            {{-- PAMERAN MANAGEMENT CARDS - Mobile & Tablet --}}
                             <div x-show="managementViewType === 'pameran'" class="lg:hidden space-y-3">
                                 <template x-for="booking in paginatedManagementBookings" :key="booking.id">
                                     <div
                                         class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                                        {{-- Header --}}
                                         <div class="flex items-start justify-between mb-3">
                                             <span
                                                 class="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
@@ -1079,7 +1039,6 @@
                                             </span>
                                         </div>
 
-                                        {{-- PIC & SPV Info --}}
                                         <div class="mb-3 space-y-2">
                                             <div>
                                                 <div class="text-sm font-semibold text-gray-900 dark:text-gray-100"
@@ -1094,7 +1053,6 @@
                                             </div>
                                         </div>
 
-                                        {{-- ✅ NEW: Tanggal Booking --}}
                                         <div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">Tanggal Booking:
                                             </div>
@@ -1102,7 +1060,6 @@
                                                 x-text="booking.date"></div>
                                         </div>
 
-                                        {{-- Actions --}}
                                         <div class="flex gap-2">
                                             <button @click="openManagementDetailModal(booking)"
                                                 class="flex-1 px-3 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-lg transition">
@@ -1117,7 +1074,6 @@
                                 </template>
                             </div>
 
-                            {{-- PAGINATION MANAGEMENT BOOKING - DESKTOP --}}
                             <div x-show="filteredManagementBookings.length > 0"
                                 class="hidden lg:block bg-gray-50 dark:bg-gray-700 px-4 py-3 border-t border-gray-200 dark:border-gray-600 rounded-b-xl mt-0">
                                 <div class="flex items-center justify-between">
@@ -1172,7 +1128,6 @@
                                 </div>
                             </div>
 
-                            {{-- Pagination untuk Mobile & Tablet - Management Booking --}}
                             <div x-show="filteredManagementBookings.length > 0"
                                 class="lg:hidden bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 mt-4">
                                 <div class="flex flex-col space-y-3">
@@ -1202,7 +1157,6 @@
                                 </div>
                             </div>
 
-                            {{-- Empty States --}}
                             <div x-show="filteredManagementBookings.length === 0 && managementSearchQuery.length > 0"
                                 class="text-center py-12">
                                 <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none"
@@ -1228,14 +1182,12 @@
                             </div>
                         </div>
 
-                        {{-- UPDATED Management Detail Modal - Test Drive --}}
                         <div x-show="managementDetailModal && selectedManagementBooking?.booking_type === 'test_drive'"
                             x-cloak
                             class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
                             <div @click.away="managementDetailModal=false; selectedManagementBooking=null"
                                 class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
 
-                                {{-- Simple Header --}}
                                 <div
                                     class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detail Booking Test
@@ -1250,10 +1202,8 @@
                                     </button>
                                 </div>
 
-                                {{-- Content --}}
                                 <div x-show="selectedManagementBooking" class="overflow-y-auto flex-1 p-6">
                                     <div class="space-y-6">
-                                        {{-- Mobil --}}
                                         <div>
                                             <label
                                                 class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Mobil</label>
@@ -1261,7 +1211,6 @@
                                                 x-text="selectedManagementBooking?.car"></div>
                                         </div>
 
-                                        {{-- Data Sales --}}
                                         <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                             <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">
                                                 Informasi Sales</h4>
@@ -1283,7 +1232,6 @@
                                             </div>
                                         </div>
 
-                                        {{-- Data Customer --}}
                                         <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                             <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Data
                                                 Customer</h4>
@@ -1318,7 +1266,6 @@
                                             </div>
                                         </div>
 
-                                        {{-- Detail Test Drive --}}
                                         <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                             <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Detail
                                                 Test Drive</h4>
@@ -1351,7 +1298,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Simple Footer --}}
                                 <div
                                     class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                                     <button @click="managementDetailModal=false; selectedManagementBooking=null"
@@ -1362,14 +1308,12 @@
                             </div>
                         </div>
 
-                        {{-- UPDATED Management Detail Modal - Pameran --}}
                         <div x-show="managementDetailModal && selectedManagementBooking?.booking_type === 'pameran'"
                             x-cloak
                             class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
                             <div @click.away="managementDetailModal=false; selectedManagementBooking=null"
                                 class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
 
-                                {{-- Simple Header --}}
                                 <div
                                     class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detail Booking
@@ -1384,10 +1328,8 @@
                                     </button>
                                 </div>
 
-                                {{-- Content --}}
                                 <div x-show="selectedManagementBooking" class="overflow-y-auto flex-1 p-6">
                                     <div class="space-y-6">
-                                        {{-- Nama PIC --}}
                                         <div>
                                             <label
                                                 class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Nama
@@ -1396,7 +1338,6 @@
                                                 x-text="selectedManagementBooking?.customer"></div>
                                         </div>
 
-                                        {{-- Mobil --}}
                                         <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                             <label
                                                 class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Mobil</label>
@@ -1404,7 +1345,6 @@
                                                 x-text="selectedManagementBooking?.car"></div>
                                         </div>
 
-                                        {{-- Tanggal Acara --}}
                                         <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
@@ -1438,7 +1378,6 @@
                                                 x-text="selectedManagementBooking?.end_date || '-'"></div>
                                         </div>
 
-                                        {{-- Target Prospect --}}
                                         <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                             <label
                                                 class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Target
@@ -1447,7 +1386,6 @@
                                                 x-text="selectedManagementBooking?.address || '-'"></div>
                                         </div>
 
-                                        {{-- Lokasi Acara --}}
                                         <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                             <label
                                                 class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Lokasi
@@ -1456,7 +1394,6 @@
                                                 x-text="selectedManagementBooking?.event_location || '-'"></div>
                                         </div>
 
-                                        {{-- Status --}}
                                         <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                             <label
                                                 class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Status
@@ -1484,7 +1421,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Simple Footer --}}
                                 <div
                                     class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                                     <button @click="managementDetailModal=false; selectedManagementBooking=null"
@@ -1495,14 +1431,12 @@
                             </div>
                         </div>
 
-                        {{-- Data Booking Section --}}
                         <div
                             class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-600 shadow-lg mb-8">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                                 <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Data Booking
                                 </h2>
 
-                                {{-- Toggle Booking Type --}}
                                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                                     <div class="flex items-center gap-3">
                                         <div
@@ -1524,7 +1458,6 @@
                                 </div>
                             </div>
 
-                            {{-- Search & Count --}}
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
                                 <div class="relative flex-1">
                                     <input x-model="bookingDataSearchQuery" type="text"
@@ -1544,7 +1477,6 @@
                                 </span>
                             </div>
 
-                            {{-- TEST DRIVE BOOKING TABLE - Desktop --}}
                             <div x-show="bookingViewType === 'test_drive'" class="hidden lg:block overflow-x-auto">
                                 <table class="w-full table-fixed">
                                     <thead>
@@ -1559,16 +1491,16 @@
                                                 SPV
                                             </th>
                                             <th
-                                                class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-48">
+                                                class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-40">
                                                 Mobil</th>
                                             <th
                                                 class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-40">
-                                                Tanggal</th>
+                                                Tanggal booking</th>
                                             <th
-                                                class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-40">
+                                                class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-48">
                                                 Data Customer</th>
                                             <th
-                                                class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-40">
+                                                class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-48">
                                                 Jam Test Drive</th>
                                             <th
                                                 class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-48">
@@ -1581,7 +1513,6 @@
                                     <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
                                         <template x-for="booking in paginatedBookingData" :key="booking.id">
                                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-600 transition h-20">
-                                                {{-- Sales Info --}}
                                                 <td x-show="'{{ auth()->user()->role }}' === 'spv'"
                                                     class="px-4 py-3">
                                                     <div class="font-medium text-gray-900 dark:text-gray-100"
@@ -1595,15 +1526,13 @@
                                                     <div class="text-sm font-medium text-gray-900 dark:text-gray-100"
                                                         x-text="booking.spv"></div>
                                                 </td>
-                                                {{-- Mobil --}}
+
                                                 <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
                                                     x-text="booking.car"></td>
 
-                                                {{-- Tanggal --}}
                                                 <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100"
                                                     x-text="booking.date"></td>
 
-                                                {{-- Data Customer Button --}}
                                                 <td class="px-4 py-3 text-center">
                                                     <button @click="openCustomerDetailFromBooking(booking)"
                                                         class="px-4 py-2 bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition">
@@ -1611,13 +1540,11 @@
                                                     </button>
                                                 </td>
 
-                                                {{-- Jam Test Drive --}}
                                                 <td class="px-4 py-3 text-center">
                                                     <div class="text-sm font-medium text-gray-900 dark:text-gray-100"
                                                         x-text="booking.test_drive_time || '-'"></div>
                                                 </td>
 
-                                                {{-- Checksheet Summary --}}
                                                 <td class="px-4 py-3 text-center">
                                                     <button @click="viewChecksheetSummary(booking.email)"
                                                         class="px-4 py-2 text-white text-sm font-medium rounded-lg transition inline-flex items-center gap-2"
@@ -1633,7 +1560,6 @@
                                                     </button>
                                                 </td>
 
-                                                {{-- Status --}}
                                                 <td class="px-4 py-3 text-center">
                                                     <span
                                                         class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full whitespace-nowrap"
@@ -1657,7 +1583,6 @@
                                                 </td>
                                             </tr>
                                         </template>
-                                        {{-- Empty rows to maintain table height --}}
                                         <template x-for="i in (bookingItemsPerPage - paginatedBookingData.length)"
                                             :key="'empty-' + i">
                                             <tr class="h-20">
@@ -1724,15 +1649,12 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
 
-                            {{-- TEST DRIVE BOOKING CARDS - Mobile & Tablet --}}
                             <div x-show="bookingViewType === 'test_drive'" class="lg:hidden space-y-3">
                                 <template x-for="booking in paginatedBookingData" :key="booking.id">
                                     <div
                                         class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition">
-                                        {{-- Header: Sales & Status --}}
                                         <div class="flex items-start justify-between mb-3">
                                             <div class="flex-1 min-w-0">
                                                 <template x-if="'{{ auth()->user()->role }}' === 'spv'">
@@ -1768,7 +1690,6 @@
                                             </span>
                                         </div>
 
-                                        {{-- Details --}}
                                         <div class="space-y-1.5 text-xs text-gray-600 dark:text-gray-300 mb-3">
                                             <div class="flex items-start">
                                                 <span class="font-medium w-24 flex-shrink-0">Mobil:</span>
@@ -1785,7 +1706,6 @@
                                             </div>
                                         </div>
 
-                                        {{-- Detail Customer Button --}}
                                         <button @click="openCustomerDetailFromBooking(booking)"
                                             class="w-full px-3 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-lg transition">
                                             Detail Customer
@@ -1795,7 +1715,6 @@
                             </template>
                         </div>
 
-                        {{-- PAMERAN/MOVEX BOOKING TABLE - Desktop --}}
                         <div x-show="bookingViewType === 'pameran'" class="hidden lg:block overflow-x-auto">
                             <table class="w-full table-fixed">
                                 <thead>
@@ -1833,7 +1752,6 @@
                                 <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
                                     <template x-for="booking in paginatedBookingData" :key="booking.id">
                                         <tr class="h-20 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                                            {{-- PIC --}}
                                             <td class="px-4 py-3">
                                                 <div class="font-medium text-gray-900 dark:text-gray-100 text-sm"
                                                     x-text="booking.customer"></div>
@@ -1841,49 +1759,41 @@
                                                     x-text="booking.phone"></div>
                                             </td>
 
-                                            {{-- SPV --}}
                                             <td x-show="'{{ auth()->user()->role }}' !== 'spv'" class="px-4 py-3">
                                                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100"
                                                     x-text="booking.spv || '-'"></div>
                                             </td>
 
-                                            {{-- Mobil --}}
                                             <td class="px-4 py-3">
                                                 <div class="text-sm text-gray-900 dark:text-gray-100"
                                                     x-text="booking.car"></div>
                                             </td>
 
-                                            {{-- Tanggal Booking --}}
                                             <td class="px-4 py-3">
                                                 <div class="text-sm text-gray-900 dark:text-gray-100"
                                                     x-text="booking.date"></div>
                                             </td>
 
-                                            {{-- Tanggal Acara --}}
                                             <td class="px-4 py-3">
                                                 <div class="text-sm text-gray-900 dark:text-gray-100"
                                                     x-text="booking.event_date || '-'"></div>
                                             </td>
 
-                                            {{-- Tanggal Mulai --}}
                                             <td class="px-4 py-3">
                                                 <div class="text-sm text-gray-900 dark:text-gray-100"
                                                     x-text="booking.start_date || '-'"></div>
                                             </td>
 
-                                            {{-- Tanggal Selesai --}}
                                             <td class="px-4 py-3">
                                                 <div class="text-sm text-gray-900 dark:text-gray-100"
                                                     x-text="booking.end_date || '-'"></div>
                                             </td>
 
-                                            {{-- Target Prospect --}}
                                             <td class="px-4 py-3">
                                                 <div class="text-sm text-gray-900 dark:text-gray-100 truncate max-w-xs"
                                                     x-text="booking.address || '-'"></div>
                                             </td>
 
-                                            {{-- Status --}}
                                             <td class="px-4 py-3 text-center">
                                                 <span
                                                     class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full whitespace-nowrap"
@@ -1907,7 +1817,6 @@
                                             </td>
                                         </tr>
                                     </template>
-                                    {{-- Empty rows to maintain table height --}}
                                     <template x-for="i in (bookingItemsPerPage - paginatedBookingData.length)"
                                         :key="'empty-' + i">
                                         <tr class="h-20">
@@ -1920,7 +1829,7 @@
                                     </template>
                                 </tbody>
                             </table>
-                            {{-- PAGINATION FOR PAMERAN/MOVEX --}}
+
                             <div x-show="filteredBookingData.length > 0"
                                 class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-t border-gray-200 dark:border-gray-600 rounded-b-xl">
                                 <div class="flex items-center justify-between">
@@ -1939,7 +1848,6 @@
 
                                     <div>
                                         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                                            <!-- Previous Button -->
                                             <button @click="prevBookingPage()" :disabled="bookingCurrentPage === 1"
                                                 class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
                                                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
@@ -1949,7 +1857,6 @@
                                                 </svg>
                                             </button>
 
-                                            <!-- Page Numbers -->
                                             <template x-for="page in bookingVisiblePages" :key="page">
                                                 <button @click="goToBookingPage(page)"
                                                     :disabled="typeof page !== 'number'"
@@ -1961,7 +1868,6 @@
                                                 </button>
                                             </template>
 
-                                            <!-- Next Button -->
                                             <button @click="nextBookingPage()"
                                                 :disabled="bookingCurrentPage === bookingTotalPages"
                                                 class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -1977,12 +1883,10 @@
                             </div>
                         </div>
 
-                        {{-- PAMERAN/MOVEX BOOKING CARDS - Mobile & Tablet --}}
                         <div x-show="bookingViewType === 'pameran'" class="lg:hidden space-y-3">
                             <template x-for="booking in paginatedBookingData" :key="booking.id">
                                 <div
                                     class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition">
-                                    {{-- Header: PIC & Status --}}
                                     <div class="flex items-start justify-between mb-3">
                                         <div class="flex-1 min-w-0">
                                             <h4 class="font-semibold text-gray-900 dark:text-gray-100"
@@ -2006,7 +1910,6 @@
                                         </span>
                                     </div>
 
-                                    {{-- Details --}}
                                     <div class="space-y-1.5 text-xs text-gray-600 dark:text-gray-300 mb-3">
                                         <div x-show="'{{ auth()->user()->role }}' !== 'spv'"
                                             class="flex items-start">
@@ -2044,7 +1947,6 @@
                             </template>
                         </div>
 
-                        {{-- Pagination untuk Mobile & Tablet - Data Booking --}}
                         <div x-show="filteredBookingData.length > 0"
                             class="lg:hidden bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-600 mt-4">
                             <div class="flex flex-col space-y-3">
@@ -2074,7 +1976,6 @@
                             </div>
                         </div>
 
-                        {{-- Empty States --}}
                         <div x-show="filteredBookingData.length === 0 && bookingDataSearchQuery.length > 0"
                             class="text-center py-12">
                             <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor"
@@ -2100,14 +2001,12 @@
                         </div>
                     </div>
 
-                    {{-- UPDATED Management Detail Modal - Test Drive --}}
                     <div x-show="managementDetailModal && selectedManagementBooking?.booking_type === 'test_drive'"
                         x-cloak
                         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
                         <div @click.away="managementDetailModal=false; selectedManagementBooking=null"
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
 
-                            {{-- Simple Header --}}
                             <div
                                 class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detail Booking Test
@@ -2122,10 +2021,8 @@
                                 </button>
                             </div>
 
-                            {{-- Content --}}
                             <div x-show="selectedManagementBooking" class="overflow-y-auto flex-1 p-6">
                                 <div class="space-y-6">
-                                    {{-- Mobil --}}
                                     <div>
                                         <label
                                             class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Mobil</label>
@@ -2133,7 +2030,6 @@
                                             x-text="selectedManagementBooking?.car"></div>
                                     </div>
 
-                                    {{-- Data Sales --}}
                                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                         <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Informasi
                                             Sales</h4>
@@ -2155,7 +2051,6 @@
                                         </div>
                                     </div>
 
-                                    {{-- Data Customer --}}
                                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                         <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Data
                                             Customer</h4>
@@ -2190,7 +2085,6 @@
                                         </div>
                                     </div>
 
-                                    {{-- Detail Test Drive --}}
                                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                         <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Detail
                                             Test Drive</h4>
@@ -2222,7 +2116,6 @@
                                 </div>
                             </div>
 
-                            {{-- Simple Footer --}}
                             <div
                                 class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                                 <button @click="managementDetailModal=false; selectedManagementBooking=null"
@@ -2233,14 +2126,12 @@
                         </div>
                     </div>
 
-                    {{-- UPDATED Management Detail Modal - Pameran --}}
                     <div x-show="managementDetailModal && selectedManagementBooking?.booking_type === 'pameran'"
                         x-cloak
                         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
                         <div @click.away="managementDetailModal=false; selectedManagementBooking=null"
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
 
-                            {{-- Simple Header --}}
                             <div
                                 class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detail Booking
@@ -2255,10 +2146,9 @@
                                 </button>
                             </div>
 
-                            {{-- Content --}}
                             <div x-show="selectedManagementBooking" class="overflow-y-auto flex-1 p-6">
                                 <div class="space-y-6">
-                                    {{-- Nama PIC --}}
+
                                     <div>
                                         <label
                                             class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Nama
@@ -2267,7 +2157,6 @@
                                             x-text="selectedManagementBooking?.customer"></div>
                                     </div>
 
-                                    {{-- Mobil --}}
                                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                         <label
                                             class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Mobil</label>
@@ -2275,7 +2164,6 @@
                                             x-text="selectedManagementBooking?.car"></div>
                                     </div>
 
-                                    {{-- Tanggal Acara --}}
                                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
@@ -2309,7 +2197,6 @@
                                             x-text="selectedManagementBooking?.end_date || '-'"></div>
                                     </div>
 
-                                    {{-- Target Prospect --}}
                                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                         <label
                                             class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Target
@@ -2318,7 +2205,6 @@
                                             x-text="selectedManagementBooking?.address || '-'"></div>
                                     </div>
 
-                                    {{-- Lokasi Acara --}}
                                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                         <label
                                             class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Lokasi
@@ -2327,7 +2213,6 @@
                                             x-text="selectedManagementBooking?.event_location || '-'"></div>
                                     </div>
 
-                                    {{-- Status --}}
                                     <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                         <label
                                             class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Status
@@ -2355,7 +2240,6 @@
                                 </div>
                             </div>
 
-                            {{-- Simple Footer --}}
                             <div
                                 class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                                 <button @click="managementDetailModal=false; selectedManagementBooking=null"
@@ -2365,7 +2249,6 @@
                             </div>
                         </div>
                     </div>
-                    {{-- Status Modal - FIXED WITH CORRECT DROPDOWN OPTIONS --}}
                     <div x-show="statusModal" x-cloak
                         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md">
@@ -2408,11 +2291,9 @@
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status
                                             Booking</label>
 
-                                        {{-- Conditional dropdown based on role --}}
                                         <select x-model="newStatus"
                                             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
 
-                                            {{-- Admin: All statuses --}}
                                             <template x-if="'{{ auth()->user()->role }}' === 'admin'">
                                                 <optgroup label="Pilih Status">
                                                     <option value="Menunggu">Menunggu</option>
@@ -2432,7 +2313,6 @@
                                                 </optgroup>
                                             </template>
 
-                                            {{-- SPV: Limited statuses (APPROVE/CANCEL ONLY) --}}
                                             <template x-if="'{{ auth()->user()->role }}' === 'spv'">
                                                 <optgroup label="Pilih Aksi">
                                                     <option value="Diproses">Approve (Diproses)</option>
@@ -2440,7 +2320,6 @@
                                                 </optgroup>
                                             </template>
 
-                                            {{-- Branch Manager: Approve or Cancel --}}
                                             <template x-if="'{{ auth()->user()->role }}' === 'branch_manager'">
                                                 <optgroup label="Pilih Aksi">
                                                     <option value="Dikonfirmasi">Approve (Dikonfirmasi)</option>
@@ -2450,7 +2329,6 @@
                                             </template>
                                         </select>
 
-                                        {{-- Status info --}}
                                         <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                             <template x-if="'{{ auth()->user()->role }}' === 'branch_manager'">
                                                 <div>
@@ -2490,13 +2368,12 @@
                             </div>
                         </div>
                     </div>
-                    {{-- Customer Detail Modal --}}
+
                     <div x-show="customerDetailModal" x-cloak
                         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
                         <div @click.away="customerDetailModal=false"
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
 
-                            {{-- Header --}}
                             <div
                                 class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detail Customer</h3>
@@ -2510,9 +2387,7 @@
                                 </button>
                             </div>
 
-                            {{-- Content --}}
                             <div x-show="selectedCustomerDetail" class="overflow-y-auto flex-1 p-6 space-y-6">
-                                {{-- Informasi Pribadi --}}
                                 <div>
                                     <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Informasi
                                         Pribadi</h4>
@@ -2550,7 +2425,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Riwayat Booking --}}
                                 <div>
                                     <div class="flex items-center justify-between mb-3">
                                         <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400">Riwayat
@@ -2611,7 +2485,6 @@
                                 </div>
                             </div>
 
-                            {{-- Footer --}}
                             <div
                                 class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                                 <div class="flex gap-3">
@@ -2624,13 +2497,11 @@
                         </div>
                     </div>
 
-                    {{-- Edit Customer Modal --}}
                     <div x-show="editCustomerModal" x-cloak
                         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
                         <div @click.away="editCustomerModal=false; editingCustomer=null"
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
 
-                            {{-- Simple Header (sama dengan Detail Booking) --}}
                             <div
                                 class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Edit Customer</h3>
@@ -2644,10 +2515,8 @@
                                 </button>
                             </div>
 
-                            {{-- Content --}}
                             <div x-show="editingCustomer" class="overflow-y-auto flex-1 p-6">
                                 <div class="space-y-6">
-                                    {{-- Informasi Pribadi --}}
                                     <div>
                                         <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Informasi
                                             Pribadi</h4>
@@ -2692,7 +2561,6 @@
                                         </div>
                                     </div>
 
-                                    {{-- SPV Assignment - ONLY visible for Admin --}}
                                     <div x-show="isAdmin()"
                                         class="pt-4 border-t border-gray-200 dark:border-gray-700">
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -2715,7 +2583,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Simple Footer (sama dengan Detail Booking) --}}
                                 <div
                                     class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                                     <div class="flex gap-3">
@@ -2733,12 +2600,10 @@
                         </div>
                     </div>
 
-                    {{-- Checksheet Summary Modal --}}
                     <div x-show="checksheetSummaryModal" x-cloak
                         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
                         <div @click.away="checksheetSummaryModal=false; selectedChecksheetSummary=null"
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-                            {{-- Header --}}
                             <div
                                 class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800">
                                 <div>
@@ -2758,7 +2623,6 @@
                                 </button>
                             </div>
 
-                            {{-- Content --}}
                             <div class="overflow-y-auto flex-1 p-6">
                                 <div x-show="!selectedChecksheetSummary || selectedChecksheetSummary.length === 0"
                                     class="text-center py-12">
@@ -2784,7 +2648,6 @@
                                             :class="summary.status === 'good' ?
                                                 'border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20' :
                                                 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20'">
-                                            {{-- Header Card --}}
                                             <div class="px-5 py-3 border-b"
                                                 :class="summary.status === 'good' ?
                                                     'bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-800' :
@@ -2826,9 +2689,7 @@
                                                 </div>
                                             </div>
 
-                                            {{-- Body Card --}}
                                             <div class="p-5 space-y-4">
-                                                {{-- Waktu --}}
                                                 <div class="flex items-center gap-4 text-sm">
                                                     <div class="flex items-center gap-2">
                                                         <svg class="w-4 h-4 text-gray-500 dark:text-gray-400"
@@ -2856,7 +2717,6 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- BAHAN BAKAR --}}
                                                 <div x-show="summary.fuel_changed"
                                                     class="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-3">
                                                     <h5
@@ -2883,7 +2743,6 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- DOKUMEN & KUNCI --}}
                                                 <div x-show="summary.dokumen_issues && summary.dokumen_issues.length > 0"
                                                     class="bg-purple-50 dark:bg-purple-900/20 border-2 border-purple-300 dark:border-purple-700 rounded-lg p-3">
                                                     <h5
@@ -2906,7 +2765,6 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- KELENGKAPAN TAMBAHAN --}}
                                                 <div x-show="summary.kelengkapan_issues && summary.kelengkapan_issues.length > 0"
                                                     class="bg-indigo-50 dark:bg-indigo-900/20 border-2 border-indigo-300 dark:border-indigo-700 rounded-lg p-3">
                                                     <h5
@@ -2929,7 +2787,6 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- Issues saat dipinjam --}}
                                                 <div
                                                     x-show="summary.pinjam_issues && summary.pinjam_issues.length > 0">
                                                     <h5
@@ -2953,7 +2810,6 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- Issues saat dikembalikan --}}
                                                 <div
                                                     x-show="summary.kembali_issues && summary.kembali_issues.length > 0">
                                                     <h5
@@ -2977,7 +2833,6 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- Perubahan Kondisi --}}
                                                 <div x-show="summary.changed_conditions && summary.changed_conditions.length > 0"
                                                     class="bg-white dark:bg-gray-900/50 border-2 border-red-300 dark:border-red-700 rounded-lg p-3">
                                                     <h5
@@ -3001,7 +2856,6 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- TANGGAL PENGGANTIAN PEWANGI --}}
                                                 <div x-show="summary.tanggal_penggantian_pewangi"
                                                     class="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg p-3">
                                                     <h5
@@ -3018,7 +2872,6 @@
                                                         x-text="summary.tanggal_penggantian_pewangi"></span>
                                                 </div>
 
-                                                {{-- Kondisi Sempurna --}}
                                                 <div x-show="summary.status === 'good'"
                                                     class="bg-white dark:bg-gray-900/50 border-2 border-green-300 dark:border-green-700 rounded-lg p-3">
                                                     <div class="flex items-center gap-3">
@@ -3045,7 +2898,6 @@
                                 </div>
                             </div>
 
-                            {{-- Footer --}}
                             <div
                                 class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                                 <button @click="checksheetSummaryModal=false; selectedChecksheetSummary=null"
@@ -3056,7 +2908,6 @@
                         </div>
                     </div>
 
-                    {{-- Scripts --}}
                     <style>
                         [x-cloak] {
                             display: none !important;
@@ -3070,23 +2921,20 @@
                                 sidebarOpen: true,
                                 searchQuery: '',
                                 customerSearchQuery: '',
-                                bookingDataSearchQuery: '', // NEW: untuk search di Data Booking
-                                bookingViewType: 'test_drive', // Toggle antara test_drive dan pameran di Data Booking
-                                managementViewType: 'test_drive', // Toggle antara test_drive dan pameran di Management Booking
-                                managementSearchQuery: '', // NEW: search untuk Management Booking
-                                managementDetailModal: false, // NEW: modal detail management booking   
-                                selectedManagementBooking: null, // NEW: booking yang dipilih di management
+                                bookingDataSearchQuery: '',
+                                bookingViewType: 'test_drive',
+                                managementViewType: 'test_drive',
+                                managementSearchQuery: '',
+                                managementDetailModal: false,
+                                selectedManagementBooking: null,
                                 managementSPVFilter: '',
                                 managementSPVSort: '',
-                                // Pagination untuk Data Booking
                                 bookingCurrentPage: 1,
                                 bookingItemsPerPage: 10,
                                 managementCurrentPage: 1,
                                 managementItemsPerPage: 10,
-                                // Status filter & sort for Management Booking
                                 managementStatusFilter: '',
                                 managementStatusSort: '',
-                                // Status order mapping
                                 statusOrder: {
                                     'Menunggu': 1,
                                     'Diproses': 2,
@@ -3097,38 +2945,33 @@
                                     'Perawatan': 6,
                                     'Dibatalkan': 7
                                 },
-                                // Filter by status
+
                                 filterManagementByStatus(status) {
                                     this.managementStatusFilter = status;
                                     this.managementCurrentPage = 1;
                                 },
 
-                                // Sort status
                                 sortManagementStatus(direction) {
                                     this.managementStatusSort = direction;
                                     this.managementCurrentPage = 1;
                                 },
 
-                                // Clear filter
                                 clearManagementStatusFilter() {
                                     this.managementStatusFilter = '';
                                     this.managementStatusSort = '';
                                     this.managementCurrentPage = 1;
                                 },
 
-                                // Sort by SPV Name
                                 sortManagementBySPV(direction) {
                                     this.managementSPVSort = direction;
-                                    this.managementCurrentPage = 1; // Reset to first page
+                                    this.managementCurrentPage = 1;
                                 },
 
-                                // Clear SPV Sort
                                 clearManagementSPVSort() {
                                     this.managementSPVSort = '';
                                     this.managementCurrentPage = 1;
                                 },
 
-                                // Computed - Get unique SPV list from bookings
                                 get uniqueSPVList() {
                                     const spvSet = new Set();
 
@@ -3138,31 +2981,26 @@
                                         }
                                     });
 
-                                    // Convert to array and sort alphabetically
                                     return Array.from(spvSet).sort((a, b) => a.localeCompare(b));
                                 },
 
-                                // Sort by SPV Name
                                 sortManagementBySPV(direction) {
                                     this.managementSPVSort = direction;
-                                    this.managementSPVFilter = ''; // Clear specific filter when sorting
+                                    this.managementSPVFilter = '';
                                     this.managementCurrentPage = 1;
                                 },
 
-                                // Filter by Specific SPV
                                 filterManagementBySPV(spvName) {
                                     this.managementSPVFilter = spvName;
-                                    this.managementSPVSort = ''; // Clear sort when filtering by specific SPV
+                                    this.managementSPVSort = '';
                                     this.managementCurrentPage = 1;
                                 },
 
-                                // Clear SPV Filter
                                 clearManagementSPVFilter() {
                                     this.managementSPVSort = '';
                                     this.managementSPVFilter = '';
                                     this.managementCurrentPage = 1;
                                 },
-
 
                                 filters: {
                                     car: '',
@@ -3199,8 +3037,8 @@
 
                                 customerDetailModal: false,
                                 selectedCustomerDetail: null,
-                                bookingCustomerDetailModal: false, // Modal untuk customer dari booking
-                                selectedBookingCustomer: null, // Data customer yang dipilih dari booking
+                                bookingCustomerDetailModal: false,
+                                selectedBookingCustomer: null,
                                 editCustomerModal: false,
                                 editingCustomer: {
                                     name: '',
@@ -3247,7 +3085,6 @@
                                 },
 
                                 async init() {
-                                    // Apply theme IMMEDIATELY before any async operations
                                     const savedTheme = localStorage.getItem('darkMode');
                                     if (savedTheme !== null) {
                                         this.darkMode = savedTheme === 'true';
@@ -3256,27 +3093,22 @@
                                             '(prefers-color-scheme: dark)').matches;
                                     }
 
-                                    // Apply theme synchronously before any await
                                     this.applyTheme();
 
                                     await this.$nextTick();
 
-                                    // Watch management search
                                     this.$watch('managementSearchQuery', () => {
                                         this.managementCurrentPage = 1;
                                     });
 
-                                    // Watch management view type
                                     this.$watch('managementViewType', () => {
                                         this.managementCurrentPage = 1;
                                     });
 
-                                    // Watch booking data search
                                     this.$watch('bookingDataSearchQuery', () => {
                                         this.bookingCurrentPage = 1;
                                     });
 
-                                    // Watch booking view type
                                     this.$watch('bookingViewType', () => {
                                         this.bookingCurrentPage = 1;
                                     });
@@ -3329,7 +3161,6 @@
 
                                 async loadCustomerData() {
                                     try {
-                                        // Single API call - checksheet summary sudah included
                                         const response = await fetch('/api/bookings/customers', {
                                             headers: {
                                                 'Accept': 'application/json',
@@ -3341,7 +3172,6 @@
                                         if (response.ok) {
                                             const data = await response.json();
 
-                                            // Langsung assign, data sudah lengkap dari backend
                                             this.customerData = {};
                                             data.data.forEach(customer => {
                                                 this.customerData[customer.name] = customer;
@@ -3490,11 +3320,9 @@
                                     if (this.selectedBookingIndex !== null && this.newStatus) {
                                         const booking = this.bookings[this.selectedBookingIndex];
 
-                                        // ✅ CRITICAL: Get booking_type from selectedBooking
                                         const bookingType = this.selectedBooking?.booking_type || booking
                                             .booking_type || 'test_drive';
 
-                                        // ✅ DEBUG: Verify before sending
                                         console.log('🚀 Sending status update:', {
                                             booking_id: booking.id,
                                             booking_type: bookingType,
@@ -3503,11 +3331,9 @@
                                             user_role: '{{ auth()->user()->role }}'
                                         });
 
-                                        // Client-side validation
                                         const userRole = '{{ auth()->user()->role }}';
 
                                         if (userRole === 'branch_manager') {
-                                            // Branch Manager ONLY can set "Dikonfirmasi" or "Dibatalkan"
                                             if (!['Dikonfirmasi', 'Dibatalkan'].includes(this.newStatus)) {
                                                 this.showNotification(
                                                     'Branch Manager hanya dapat:\n' +
@@ -3518,9 +3344,7 @@
                                                 return;
                                             }
 
-                                            // Validate based on action
                                             if (this.newStatus === 'Dikonfirmasi') {
-                                                // Approve: hanya dari "Diproses"
                                                 if (booking.status !== 'Diproses') {
                                                     this.showNotification(
                                                         `Branch Manager hanya dapat approve booking dengan status "Diproses".\n\n` +
@@ -3530,7 +3354,6 @@
                                                     return;
                                                 }
                                             } else if (this.newStatus === 'Dibatalkan') {
-                                                // Cancel: dari "Diproses" atau "Dikonfirmasi"
                                                 if (!['Diproses', 'Dikonfirmasi'].includes(booking.status)) {
                                                     this.showNotification(
                                                         `Branch Manager hanya dapat cancel booking dengan status "Diproses" atau "Dikonfirmasi".\n\n` +
@@ -3541,7 +3364,7 @@
                                                 }
                                             }
                                         } else if (userRole === 'spv') {
-                                            // SPV: hanya approve/cancel "Menunggu" bookings
+
                                             if (booking.status !== 'Menunggu') {
                                                 this.showNotification(
                                                     `SPV hanya dapat approve/cancel booking dengan status "Menunggu".\n\n` +
@@ -3562,7 +3385,6 @@
                                             }
                                         }
 
-                                        // Proceed with status update
                                         try {
                                             const response = await fetch(`/api/bookings/${booking.id}/status`, {
                                                 method: 'PUT',
@@ -3574,7 +3396,7 @@
                                                 },
                                                 body: JSON.stringify({
                                                     status: this.newStatus,
-                                                    booking_type: bookingType // ✅ FIX: Pass correct booking_type
+                                                    booking_type: bookingType
                                                 })
                                             });
 
@@ -3597,7 +3419,6 @@
                                     }
                                 },
 
-                                // Computed: Paginated Data Booking
                                 get paginatedBookingData() {
                                     const filtered = this.filteredBookingData;
                                     const start = (this.bookingCurrentPage - 1) * this.bookingItemsPerPage;
@@ -3618,7 +3439,6 @@
                                     return this.bookingCurrentPage * this.bookingItemsPerPage;
                                 },
 
-                                // Computed: Paginated Management Booking
                                 get paginatedManagementBookings() {
                                     const filtered = this.filteredManagementBookings;
                                     const start = (this.managementCurrentPage - 1) * this.managementItemsPerPage;
@@ -3639,7 +3459,6 @@
                                     return this.managementCurrentPage * this.managementItemsPerPage;
                                 },
 
-                                // Methods untuk pagination Management
                                 nextManagementPage() {
                                     if (this.managementCurrentPage < this.managementTotalPages) {
                                         this.managementCurrentPage++;
@@ -3658,7 +3477,6 @@
                                     }
                                 },
 
-                                // Methods untuk pagination Data Booking
                                 nextBookingPage() {
                                     if (this.bookingCurrentPage < this.bookingTotalPages) {
                                         this.bookingCurrentPage++;
@@ -3677,7 +3495,6 @@
                                     }
                                 },
 
-                                // Computed: Visible pages untuk Management
                                 get managementVisiblePages() {
                                     const total = this.managementTotalPages;
                                     const current = this.managementCurrentPage;
@@ -3693,7 +3510,6 @@
                                     return pages;
                                 },
 
-                                // Computed: Visible pages untuk Data Booking  
                                 get bookingVisiblePages() {
                                     const total = this.bookingTotalPages;
                                     const current = this.bookingCurrentPage;
@@ -3830,15 +3646,12 @@
                                     );
                                 },
 
-                                // Get bookings by selected type
                                 get bookingsByType() {
                                     return this.bookings.filter(booking => {
-                                        // âœ… Strict type checking
                                         return booking.booking_type === this.bookingViewType;
                                     });
                                 },
 
-                                // Filtered booking data with search
                                 get filteredBookingData() {
                                     let filtered = this.bookingsByType;
                                     if (this.bookingDataSearchQuery.trim()) {
@@ -3856,18 +3669,14 @@
                                     return filtered;
                                 },
 
-                                // Get bookings by management view type
                                 get managementBookingsByType() {
                                     return this.bookings.filter(booking => {
-                                        // Strict type checking
                                         return booking.booking_type === this.managementViewType;
                                     });
                                 },
 
-                                // Filtered management bookings with search
                                 get filteredManagementBookings() {
                                     let filtered = this.managementBookingsByType;
-                                    // Search filter
                                     if (this.managementSearchQuery.trim()) {
                                         const query = this.managementSearchQuery.toLowerCase();
                                         filtered = filtered.filter(booking =>
@@ -3878,18 +3687,15 @@
                                             (booking.sales_name && booking.sales_name.toLowerCase().includes(
                                                 query)) ||
                                             (booking.spv && booking.spv.toLowerCase().includes(query)) ||
-                                            // Include SPV in search    
                                             booking.status.toLowerCase().includes(query)
                                         );
                                     }
 
-                                    // Filter by specific SPV
                                     if (this.managementSPVFilter) {
                                         filtered = filtered.filter(booking => booking.spv === this
                                             .managementSPVFilter);
                                     }
 
-                                    // Sort by SPV
                                     if (this.managementSPVSort && !this.managementSPVFilter) {
                                         filtered = [...filtered].sort((a, b) => {
                                             const spvA = (a.spv || '').toLowerCase();
@@ -3901,10 +3707,8 @@
                                         });
                                     }
 
-                                    // SPV Sort
                                     if (this.managementSPVSort) {
                                         filtered = [...filtered].sort((a, b) => {
-                                            // Use sales_name for comparison
                                             const salesA = (a.sales_name || '').toLowerCase();
                                             const salesB = (b.sales_name || '').toLowerCase();
 
@@ -3914,13 +3718,11 @@
                                         });
                                     }
 
-                                    // Status filter
                                     if (this.managementStatusFilter) {
                                         filtered = filtered.filter(booking => booking.status === this
                                             .managementStatusFilter);
                                     }
 
-                                    // Status sort
                                     if (this.managementStatusSort) {
                                         filtered = [...filtered].sort((a, b) => {
                                             const orderA = this.statusOrder[a.status] || 999;
@@ -3935,21 +3737,18 @@
                                     return filtered;
                                 },
 
-                                // Open management detail modal
                                 openManagementDetailModal(booking) {
                                     this.selectedManagementBooking = booking;
                                     this.managementDetailModal = true;
                                 },
 
-                                // Open status modal from management section
                                 openStatusModalFromManagement(booking) {
                                     const originalIndex = this.getOriginalIndex(booking);
 
-                                    // ✅ FIX: Pass booking_type explicitly
                                     this.selectedBooking = {
                                         ...booking,
                                         booking_type: booking.booking_type ||
-                                            'test_drive' // ✅ Fallback to test_drive if undefined
+                                            'test_drive'
                                     };
                                     this.selectedBookingIndex = originalIndex;
 
@@ -3960,7 +3759,6 @@
                                         status: this.selectedBooking.status
                                     });
 
-                                    // Set default status based on role
                                     const userRole = '{{ auth()->user()->role }}';
                                     const currentStatus = this.selectedBooking.status;
 
@@ -4037,17 +3835,14 @@
                                 },
 
                                 getChecksheetButtonClass(customerEmail) {
-                                    // Find customer by email
                                     const customer = Object.values(this.customerData).find(c => c.email ===
                                         customerEmail);
 
-                                    // Belum ada checksheet = Abu-abu
                                     if (!customer || !customer.checksheetSummary || customer.checksheetSummary
                                         .length === 0) {
                                         return 'bg-gray-600 hover:bg-gray-700';
                                     }
 
-                                    // Cek apakah ada checksheet dengan status warning (ada masalah/perubahan kondisi)
                                     const hasWarning = customer.checksheetSummary.some(summary => {
                                         const hasChanged = summary.changed_conditions && summary
                                             .changed_conditions.length > 0;
@@ -4066,11 +3861,10 @@
                                             summary.status === 'warning';
                                     });
 
-                                    // ✅ Return warna berdasarkan kondisi
                                     if (hasWarning) {
-                                        return 'bg-red-600 hover:bg-red-700'; // Merah = Ada masalah
+                                        return 'bg-red-600 hover:bg-red-700';
                                     } else {
-                                        return 'bg-green-600 hover:bg-green-700'; // Hijau = Semua baik
+                                        return 'bg-green-600 hover:bg-green-700';
                                     }
                                 },
 
@@ -4079,14 +3873,12 @@
                                     localStorage.setItem('darkMode', this.darkMode.toString());
                                     this.applyTheme();
 
-                                    // Force immediate DOM update
                                     this.$nextTick(() => {
                                         this.applyTheme();
                                     });
                                 },
 
                                 applyTheme() {
-                                    // Use requestAnimationFrame for immediate visual update
                                     requestAnimationFrame(() => {
                                         if (this.darkMode) {
                                             document.documentElement.classList.add('dark');
@@ -4133,15 +3925,12 @@
                                     this.customerDetailModal = true;
                                 },
 
-                                // Open customer detail from booking
                                 openCustomerDetailFromBooking(booking) {
-                                    // Method 1: Try to find in customerData by name
                                     if (this.customerData[booking.customer]) {
                                         this.openCustomerDetail(booking.customer);
                                         return;
                                     }
 
-                                    // Method 2: If not found, create minimal customer detail
                                     this.selectedCustomerDetail = {
                                         name: booking.customer,
                                         phone: booking.phone,
@@ -4161,7 +3950,6 @@
                                     this.customerDetailModal = true;
                                 },
 
-                                // Open status modal from booking data section
                                 openStatusModalFromBookingData(booking) {
                                     const originalIndex = this.getOriginalIndex(booking);
                                     this.openStatusModal(originalIndex);
@@ -4275,18 +4063,14 @@
                                     this.selectedBookingIndex = bookingIndex;
                                     this.selectedBooking = this.bookings[bookingIndex];
 
-                                    // Set default status berdasarkan role
                                     const userRole = '{{ auth()->user()->role }}';
                                     const currentStatus = this.selectedBooking.status;
 
                                     if (userRole === 'spv') {
-                                        // SPV: Default ke "Diproses" (approve)
                                         this.newStatus = 'Diproses';
                                     } else if (userRole === 'branch_manager') {
-                                        // Branch Manager: Default ke "Dikonfirmasi" (approve)
                                         this.newStatus = 'Dikonfirmasi';
                                     } else {
-                                        // Admin: Keep current status
                                         this.newStatus = currentStatus;
                                     }
 

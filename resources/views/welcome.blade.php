@@ -65,11 +65,9 @@
 </head>
 
 <body class="bg-gray-50 antialiased" x-data="bookingApp()">
-    {{-- HEADER --}}
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16 md:h-20">
-                {{-- Logo --}}
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 md:w-12 md:h-12 bg-red-600 rounded-lg flex items-center justify-center">
                         <svg class="w-6 h-6 md:w-7 md:h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -83,7 +81,6 @@
                     </div>
                 </div>
 
-                {{-- Navigation --}}
                 @if (Route::has('login'))
                     <nav class="flex items-center space-x-2 md:space-x-4">
                         @auth
@@ -98,6 +95,13 @@
                                 <a href="{{ route('checksheet') }}"
                                     class="px-3 md:px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
                                     Check Sheet
+                                </a>
+                            @endif
+
+                            @if (auth()->user()->role === 'admin')
+                                <a href="{{ route('pameran-info') }}"
+                                    class="px-3 md:px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition">
+                                    Pameran Info
                                 </a>
                             @endif
 
@@ -137,7 +141,6 @@
         </div>
     </header>
 
-    {{-- HERO SECTION --}}
     <section class="gradient-bg text-white py-16 md:py-24">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="max-w-4xl mx-auto text-center">
@@ -149,13 +152,11 @@
                     tinggi.
                 </p>
 
-                {{-- Action Buttons --}}
                 <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <a href="#vehicles" class="inline-block px-8 py-4 btn-primary text-white font-semibold rounded-lg">
                         Lihat Kendaraan
                     </a>
 
-                    {{-- Quick Booking Button --}}
                     <div class="relative" x-data="{ showQuickAction: false }">
                         <button @click="showQuickAction = !showQuickAction"
                             class="inline-flex items-center px-8 py-4 bg-white text-red-600 font-semibold rounded-lg border-2 border-red-600 hover:bg-red-50 transition">
@@ -170,7 +171,6 @@
                             </svg>
                         </button>
 
-                        {{-- Quick Booking Dropdown --}}
                         <div x-show="showQuickAction" @click.away="showQuickAction = false"
                             x-transition:enter="transition ease-out duration-200"
                             x-transition:enter-start="opacity-0 transform scale-95"
@@ -198,7 +198,6 @@
                         </div>
                     </div>
 
-                    {{-- Info Unit Tersedia Button --}}
                     <button @click="showUnitModal = true"
                         class="inline-flex items-center px-8 py-4 bg-gray-800 text-white font-semibold rounded-lg border-2 border-gray-800 hover:bg-gray-700 hover:border-gray-700 transition">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,10 +211,8 @@
         </div>
     </section>
 
-    {{-- VEHICLE COLLECTION --}}
     <main id="vehicles" class="py-16 md:py-24 bg-white">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            {{-- Section Header --}}
             <div class="text-center mb-12 md:mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                     Pilih Kendaraan Anda
@@ -225,7 +222,6 @@
                 </p>
             </div>
 
-            {{-- Vehicle Grid --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 @php
                     $cars = [
@@ -264,13 +260,11 @@
 
                 @foreach ($cars as $car)
                     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden card-hover">
-                        {{-- Image --}}
                         <div class="relative h-48 md:h-56 overflow-hidden bg-gray-100">
                             <img src="{{ $car['image'] }}" alt="{{ $car['name'] }}"
                                 class="w-full h-full object-cover" />
                         </div>
 
-                        {{-- Content --}}
                         <div class="p-6">
                             <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $car['name'] }}</h3>
                             <p class="text-gray-600 text-sm mb-4">{{ $car['description'] }}</p>
@@ -285,22 +279,17 @@
         </div>
     </main>
 
-    {{-- BOOKING MODAL --}}
     <div x-show="showModal" x-cloak class="fixed inset-0 z-[100] overflow-y-auto" style="display: none;">
-
-        {{-- Backdrop --}}
         <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity" x-show="showModal"
             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100" @click="closeModal()"></div>
 
-        {{-- Modal Container --}}
         <div class="flex min-h-full items-center justify-center p-4">
             <div class="relative bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl"
                 x-show="showModal" x-transition:enter="transition ease-out duration-300 transform"
                 x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                 @click.stop>
 
-                {{-- Header --}}
                 <div class="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl">
                     <div class="flex justify-between items-center">
                         <div>
@@ -332,10 +321,8 @@
                     </div>
                 </div>
 
-                {{-- Form Booking --}}
                 <div class="overflow-y-auto" style="max-height: calc(90vh - 180px);">
                     <form @submit.prevent="submitBooking" class="p-6 space-y-6">
-                        {{-- Selected Vehicle --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Pilih Kendaraan <span class="text-red-500">*</span>
@@ -354,7 +341,6 @@
                             </select>
                         </div>
 
-                        {{-- Pilih Supervisor (SPV) --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Pilih Supervisor (SPV) <span class="text-red-500">*</span>
@@ -369,7 +355,6 @@
                             <p class="text-xs text-gray-500 mt-1">Pilih Supervisor Anda</p>
                         </div>
 
-                        {{-- Booking Type --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Tipe Booking
@@ -398,10 +383,8 @@
                             </div>
                         </div>
 
-                        {{-- TEST DRIVE FORM --}}
                         <template x-if="bookingType === 'test_drive'">
                             <div class="space-y-6">
-                                {{-- Sales Info --}}
                                 <div class="bg-gray-50 p-4 rounded-lg space-y-4">
                                     <h3 class="font-semibold text-gray-900">Informasi Sales</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -422,7 +405,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Customer Info --}}
                                 <div class="bg-gray-50 p-4 rounded-lg space-y-4">
                                     <h3 class="font-semibold text-gray-900">Informasi Customer</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -457,7 +439,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Test Drive Details --}}
                                 <div class="bg-gray-50 p-4 rounded-lg space-y-4">
                                     <h3 class="font-semibold text-gray-900 flex items-center gap-2">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -488,10 +469,8 @@
                             </div>
                         </template>
 
-                        {{-- PAMERAN FORM --}}
                         <template x-if="bookingType === 'pameran'">
                             <div class="space-y-6">
-                                {{-- PIC Information --}}
                                 <div class="bg-gray-50 p-4 rounded-lg space-y-4">
                                     <h3 class="font-semibold text-gray-900">Informasi PIC</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -522,7 +501,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Event Details --}}
                                 <div class="bg-gray-50 p-4 rounded-lg space-y-4">
                                     <h3 class="font-semibold text-gray-900">Detail Acara</h3>
                                     <div>
@@ -568,7 +546,6 @@
                             </div>
                         </template>
 
-                        {{-- Submit Button --}}
                         <div class="pt-4">
                             <button type="submit" :disabled="isLoading"
                                 class="w-full px-6 py-4 btn-primary text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
@@ -592,7 +569,6 @@
         </div>
     </div>
 
-    {{-- FOOTER --}}
     <footer class="bg-gray-900 text-white py-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row justify-between items-center">
@@ -617,7 +593,6 @@
         </div>
     </footer>
 
-    {{-- JavaScript --}}
     <script>
         function bookingApp() {
             return {
@@ -655,7 +630,6 @@
                 },
 
                 handleBookingClick(carName) {
-                    // Check authentication first
                     if (!this.isAuthenticated) {
                         this.showAlert(
                             '🔒 Login Required!\n\n' +
@@ -666,7 +640,6 @@
                         return;
                     }
 
-                    // Check role authorization
                     if (this.userRole !== 'sales' && this.userRole !== 'admin') {
                         this.showAlert(
                             '⚠️ Access Denied!\n\n' +
@@ -678,7 +651,6 @@
                         return;
                     }
 
-                    // Check vehicle availability status
                     const unitInfo = this.getUnitInfo(carName);
                     if (!unitInfo.available || unitInfo.status_code !== 'available') {
                         this.showAlert(
@@ -691,7 +663,6 @@
                         return;
                     }
 
-                    // If authenticated, authorized, and vehicle is available, open booking modal
                     this.selectedCar = carName;
                     this.isCarLocked = true;
                     this.showModal = true;
@@ -733,7 +704,6 @@
                 @endauth
             },
 
-            // Load SPV List
             async init() {
                 await this.loadSPVList();
                 await this.loadVehicleStatus();
@@ -743,14 +713,12 @@
                 setInterval(() => {
                     this.checkNewNotifications();
                 }, 30000);
-                // Refresh vehicle status every 30 seconds
                 setInterval(() => {
                     this.loadVehicleStatus();
                 }, 30000);
             @endauth
         },
 
-        // Method untuk load SPV List
         async loadSPVList() {
                 try {
                     console.log('🔄 Loading SPV list...');
@@ -821,7 +789,6 @@
         @endauth
         },
 
-        // Load real-time vehicle status from API
         async loadVehicleStatus() {
                 try {
                     console.log('🔄 Loading vehicle status...');
@@ -848,7 +815,6 @@
                 }
             },
 
-            // Fallback default status
             setDefaultVehicleStatus() {
                 this.availableUnits = {
                     'Toyota Hilux Rangga': {
@@ -1062,7 +1028,6 @@
                         const data = await response.json();
 
                         if (response.ok && data.success) {
-                            // Custom success message dengan nama SPV
                             const spvName = this.spvList.find(spv => spv.id == this.selectedSPV)?.name || 'SPV';
 
                             let successMessage = `✅ ${data.message}\n\n` +
@@ -1304,7 +1269,6 @@
         }
         }
     </script>
-    {{-- UNIT INFO MODAL --}}
     <div x-show="showUnitModal" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" @click.self="showUnitModal = false"
         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70] p-4"
@@ -1314,7 +1278,6 @@
             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
             class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl">
 
-            <!-- Header -->
             <div class="bg-gray-900 text-white px-6 py-5 flex items-center justify-between"
                 style="background-color: #111827 !important;">
                 <div class="flex items-center gap-3">
@@ -1338,7 +1301,6 @@
                 </button>
             </div>
 
-            <!-- Content -->
             <div class="p-6 max-h-[calc(90vh-140px)] overflow-y-auto">
                 <div class="space-y-3">
                     <template x-for="(info, carName) in availableUnits" :key="carName">
@@ -1358,7 +1320,6 @@
 
                             <div class="p-4 flex items-center justify-between">
                                 <div class="flex items-center gap-4">
-                                    <!-- Animated Status Indicator -->
                                     <div class="relative flex items-center justify-center">
                                         <div class="w-4 h-4 rounded-full"
                                             :class="{
@@ -1380,7 +1341,6 @@
                                             style="animation-duration: 2s;"></div>
                                     </div>
 
-                                    <!-- Car Icon -->
                                     <div class="w-10 h-10 rounded-lg flex items-center justify-center"
                                         :class="{
                                             'bg-green-100': info.status_code === 'available',
@@ -1403,7 +1363,6 @@
                                         </svg>
                                     </div>
 
-                                    <!-- Car Name -->
                                     <div>
                                         <p class="font-bold text-gray-900" x-text="carName"></p>
                                         <p class="text-xs text-gray-500 mt-0.5">
@@ -1427,7 +1386,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Status Badge -->
                                 <span
                                     class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider shadow-md"
                                     :class="{
@@ -1440,7 +1398,6 @@
                                     x-text="info.status"></span>
                             </div>
 
-                            <!-- Hover Effect Border -->
                             <div class="absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
                                 :class="{
                                     'bg-gradient-to-r from-green-400 to-emerald-500': info.status_code === 'available',
@@ -1455,7 +1412,6 @@
                 </div>
             </div>
 
-            <!-- Footer -->
             <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 <div class="flex items-center gap-2 text-sm text-gray-600">
                     <svg class="w-4 h-4 text-gray-400 animate-spin" style="animation-duration: 3s;" fill="none"
@@ -1474,4 +1430,5 @@
         </div>
     </div>
 </body>
+
 </html>
