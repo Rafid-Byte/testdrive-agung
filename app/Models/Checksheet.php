@@ -21,7 +21,6 @@ class Checksheet extends Model
         'tipe_mobil',
         'no_polisi',
         
-        // Kondisi kendaraan saat dipinjam
         'body_luar_pinjam_baik',
         'body_luar_pinjam_tidak_baik',
         'body_luar_pinjam_catatan',
@@ -47,7 +46,6 @@ class Checksheet extends Model
         'lampu_pinjam_tidak_baik',
         'lampu_pinjam_catatan',
         
-        // Kondisi kendaraan saat dikembalikan
         'body_luar_kembali_baik',
         'body_luar_kembali_tidak_baik',
         'body_luar_kembali_catatan',
@@ -73,7 +71,6 @@ class Checksheet extends Model
         'lampu_kembali_tidak_baik',
         'lampu_kembali_catatan',
         
-        // Bahan bakar
         'bahan_bakar_pinjam_1',
         'bahan_bakar_pinjam_2',
         'bahan_bakar_pinjam_3',
@@ -91,7 +88,6 @@ class Checksheet extends Model
         'bahan_bakar_kembali_kembali_3',
         'bahan_bakar_kembali_kembali_4',
         
-        // Dokumen & kunci
         'stnk_pinjam_ada',
         'stnk_pinjam_tidak_ada',
         'kunci_utama_pinjam_ada',
@@ -105,13 +101,11 @@ class Checksheet extends Model
         'remote_keyless_kembali_ada',
         'remote_keyless_kembali_tidak_ada',
         
-        // Kelengkapan tambahan
         'air_mineral_pinjam_ada',
         'air_mineral_pinjam_tidak_ada',
         'air_mineral_kembali_ada',
         'air_mineral_kembali_tidak_ada',
         
-        // Tambahan
         'tanggal_penggantian_pewangi',
         'status',
         'notes',
@@ -121,7 +115,6 @@ class Checksheet extends Model
         'tanggal_test_drive' => 'date',
         'tanggal_penggantian_pewangi' => 'date',
         
-        // Boolean casts untuk semua checkbox
         'body_luar_pinjam_baik' => 'boolean',
         'body_luar_pinjam_tidak_baik' => 'boolean',
         'ban_velg_pinjam_baik' => 'boolean',
@@ -192,47 +185,31 @@ class Checksheet extends Model
         'air_mineral_kembali_tidak_ada' => 'boolean',
     ];
 
-    /**
-     * Relationship dengan User
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relationship dengan Booking
     public function booking()
     {
         return $this->belongsTo(TestDriveBooking::class, 'booking_id');
     }
 
-    /**
-     * Scope untuk filter berdasarkan tanggal
-     */
     public function scopeByDate($query, $date)
     {
         return $query->whereDate('tanggal_test_drive', $date);
     }
 
-    /**
-     * Scope untuk filter berdasarkan mobil
-     */
     public function scopeByCar($query, $carType)
     {
         return $query->where('tipe_mobil', $carType);
     }
 
-    /**
-     * Scope untuk filter berdasarkan status
-     */
     public function scopeByStatus($query, $status)
     {
         return $query->where('status', $status);
     }
 
-    /**
-     * Accessor untuk mendapatkan level bahan bakar saat dipinjam
-     */
     public function getFuelLevelPinjamAttribute()
     {
         if ($this->bahan_bakar_pinjam_1) return '1 Kotak';
@@ -242,9 +219,6 @@ class Checksheet extends Model
         return 'Tidak Diisi';
     }
 
-    /**
-     * Accessor untuk mendapatkan level bahan bakar saat dikembalikan
-     */
     public function getFuelLevelKembaliAttribute()
     {
         if ($this->bahan_bakar_kembali_1) return '1 Kotak';
@@ -254,9 +228,6 @@ class Checksheet extends Model
         return 'Tidak Diisi';
     }
 
-    /**
-     * Check jika ada kerusakan saat peminjaman
-     */
     public function hasKerusakanPinjam()
     {
         return $this->body_luar_pinjam_tidak_baik ||
@@ -269,9 +240,6 @@ class Checksheet extends Model
                $this->lampu_pinjam_tidak_baik;
     }
 
-    /**
-     * Check jika ada kerusakan saat pengembalian
-     */
     public function hasKerusakanKembali()
     {
         return $this->body_luar_kembali_tidak_baik ||
@@ -284,9 +252,6 @@ class Checksheet extends Model
                $this->lampu_kembali_tidak_baik;
     }
 
-    /**
-     * Get status badge color
-     */
     public function getStatusBadgeColor()
     {
         return match($this->status) {
@@ -296,9 +261,6 @@ class Checksheet extends Model
         };
     }
 
-    /**
-     * Get status label
-     */
     public function getStatusLabel()
     {
         return match($this->status) {

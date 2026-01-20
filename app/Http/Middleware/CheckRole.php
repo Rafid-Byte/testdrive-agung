@@ -10,12 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 class CheckRole
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        // Cek apakah user sudah login
         if (!Auth::check()) {
             Log::warning('CheckRole: User not authenticated, redirecting to login');
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
@@ -23,7 +19,6 @@ class CheckRole
 
         $user = Auth::user();
 
-        // ✅ CRITICAL FIX: Allow API routes for all authenticated users
         if ($request->is('api/*')) {
             Log::info('CheckRole: API route detected, allowing all authenticated users', [
                 'user_role' => $user->role,
@@ -32,7 +27,6 @@ class CheckRole
             return $next($request);
         }
 
-        // Logging informasi user yang sedang diakses
         Log::info('CheckRole: User authenticated', [
             'user_id' => $user->id,
             'user_role' => $user->role,
@@ -40,7 +34,6 @@ class CheckRole
             'route' => $request->path(),
         ]);
 
-        // Jika role user tidak termasuk dalam yang diperbolehkan
         if (!in_array($user->role, $roles)) {
             Log::warning('CheckRole: Unauthorized access attempt', [
                 'user_role' => $user->role,
@@ -48,16 +41,12 @@ class CheckRole
                 'route' => $request->path(),
             ]);
 
-            // Arahkan berdasarkan role
             return $this->redirectBasedOnRole($user, $request);
         }
 
         return $next($request);
     }
 
-    /**
-     * Redirect user berdasarkan role-nya jika mencoba mengakses halaman yang tidak diizinkan.
-     */
     private function redirectBasedOnRole($user, $request): Response
     {
         $message = 'Anda tidak memiliki akses ke halaman tersebut.';

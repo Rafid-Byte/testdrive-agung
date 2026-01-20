@@ -22,7 +22,6 @@ class Supervisor extends Model
         return $this->hasMany(TestDriveBooking::class);
     }
 
-    // Accessors
     public function getTotalBookingsAttribute(): int
     {
         return $this->bookings()->count();
@@ -35,7 +34,6 @@ class Supervisor extends Model
             ->count();
     }
     
-    // Alias untuk compatibility dengan frontend
     public function getNameAttribute(): string
     {
         return $this->nama_lengkap;

@@ -30,17 +30,11 @@ class Booking extends Model
         'updated_at' => 'datetime',
     ];
 
-    /**
-     * Relationship with User
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get formatted booking date
-     */
     public function getFormattedDateAttribute()
     {
         if ($this->booking_date) {
@@ -49,25 +43,16 @@ class Booking extends Model
         return Carbon::parse($this->created_at)->locale('id')->translatedFormat('d F Y');
     }
 
-    /**
-     * Scope untuk filter berdasarkan status
-     */
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);
     }
 
-    /**
-     * Scope untuk filter berdasarkan mobil
-     */
     public function scopeCar($query, $car)
     {
         return $query->where('car', $car);
     }
 
-    /**
-     * Scope untuk filter berdasarkan tanggal
-     */
     public function scopeDateRange($query, $from, $to)
     {
         if ($from && $to) {
@@ -80,9 +65,6 @@ class Booking extends Model
         return $query;
     }
 
-    /**
-     * Get bookings grouped by customer
-     */
     public static function getCustomerData()
     {
         $bookings = self::orderBy('created_at', 'desc')->get();

@@ -12,10 +12,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// ✅ NEW: Get SPV List untuk Sales (Public, bisa diakses tanpa auth)
+// Get SPV List untuk Sales (Public, bisa diakses tanpa auth)
 Route::get('/api/spv-list', [BookingController::class, 'getSPVList'])->name('api.spv.list');
 
-// ✅ PROTECTED: Booking from welcome page (Only authenticated users, preferably Sales)
+// Booking from welcome page (Only authenticated users, preferably Sales)
 Route::post('/booking/store', [BookingController::class, 'store'])
     ->middleware('auth')
     ->name('booking.store');
@@ -37,14 +37,12 @@ Route::middleware(['auth', 'role:admin,spv,branch_manager'])->group(function () 
         Route::get('/', [BookingController::class, 'index']);
         Route::post('/manual', [BookingController::class, 'storeManual'])->name('manual');
 
-        // Admin & SPV can update status, Branch Manager cannot
         Route::put('/{id}/status', [BookingController::class, 'updateStatus'])
             ->name('update-status');
 
         Route::get('/customers', [BookingController::class, 'getCustomerData'])->name('customers');
         Route::get('/staff', [BookingController::class, 'getStaffData'])->name('staff');
 
-        // Admin & SPV can update/delete, Branch Manager cannot
         Route::put('/customers/update', [BookingController::class, 'updateCustomer'])
             ->middleware('role:admin,spv')
             ->name('customers.update');

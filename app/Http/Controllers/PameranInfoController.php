@@ -10,13 +10,11 @@ use Illuminate\Support\Facades\Auth;
 class PameranInfoController extends Controller
 {
 
-    // Display the pameran info page
     public function index()
     {
         return view('pameran-info');
     }
 
-    // Get all approved pameran bookings (API endpoint)
     public function getPameranBookings(Request $request)
     {
         try {
@@ -30,7 +28,6 @@ class PameranInfoController extends Controller
                 ])
                 ->orderBy('tanggal_booking', 'desc');
 
-            // Filter by search
             if ($request->has('search') && !empty($request->search)) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
@@ -42,12 +39,10 @@ class PameranInfoController extends Controller
                 });
             }
 
-            // Filter by status
             if ($request->has('status') && !empty($request->status)) {
                 $query->where('status', $request->status);
             }
 
-            // Filter by date range
             if ($request->has('date_from') && !empty($request->date_from)) {
                 $query->whereDate('tanggal_booking', '>=', $request->date_from);
             }
@@ -90,7 +85,6 @@ class PameranInfoController extends Controller
         }
     }
 
-    // Update status of pameran booking
     public function updateStatus(Request $request, $id)
     {
         try {
@@ -130,7 +124,6 @@ class PameranInfoController extends Controller
         }
     }
 
-    // Get details of pameran booking
     public function show($id)
     {
         try {

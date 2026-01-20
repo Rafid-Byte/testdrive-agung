@@ -19,7 +19,6 @@ class CheckSheetController extends Controller
             session()->forget('error');
         }
 
-        // GET TEST DRIVE BOOKINGS
         $testDriveBookings = TestDriveBooking::with(['supervisor', 'security', 'checksheet'])
             ->whereNotNull('supervisor_user_id')
             ->orderBy('tanggal_booking', 'desc')
@@ -71,10 +70,8 @@ class CheckSheetController extends Controller
                 'no_polisi' => 'required|string',
             ]);
 
-            // Ambil booking dan cek kondisi
             $booking = TestDriveBooking::findOrFail($request->booking_id);
 
-            // VALIDASI PENTING: Cek dulu sebelum create
             if ($booking->hasChecksheet()) {
                 return response()->json([
                     'success' => false,
@@ -89,7 +86,6 @@ class CheckSheetController extends Controller
                 ], 422);
             }
 
-            // Cek status approval dari Branch Manager
             $allowedStatuses = ['Dikonfirmasi', 'Sedang test drive', 'Selesai', 'Perawatan'];
             if (!in_array($booking->status, $allowedStatuses)) {
                 $statusMessage = match ($booking->status) {
@@ -107,19 +103,16 @@ class CheckSheetController extends Controller
 
             DB::beginTransaction();
 
-            // Prepare data dengan nama customer dari booking
             $data = $request->all();
             $data['user_id'] = Auth::id();
             $data['status'] = 'pending';
             $data['nama_customer'] = $booking->nama_lengkap;
 
-            // Convert semua checkbox ke boolean
             $checkboxFields = $this->getAllCheckboxFields();
             foreach ($checkboxFields as $field) {
                 $data[$field] = filter_var($request->input($field, false), FILTER_VALIDATE_BOOLEAN);
             }
 
-            // CREATE checksheet baru
             $checksheet = Checksheet::create($data);
 
             DB::commit();
@@ -139,7 +132,6 @@ class CheckSheetController extends Controller
         }
     }
 
-    // Method show dengan konversi boolean
     public function show($id)
     {
         try {
@@ -148,7 +140,6 @@ class CheckSheetController extends Controller
 
             $currentUser = Auth::user();
 
-            // Check if user is authenticated
             if (!$currentUser) {
                 return response()->json([
                     'success' => false,
@@ -172,7 +163,6 @@ class CheckSheetController extends Controller
                 ], 403);
             }
 
-            // Konversi semua boolean 
             $formData = $checksheet->toArray();
             $checkboxFields = $this->getAllCheckboxFields();
 
@@ -182,7 +172,6 @@ class CheckSheetController extends Controller
                 }
             }
 
-            // Format tanggal
             if (isset($formData['tanggal_test_drive'])) {
                 $formData['tanggal_test_drive'] = \Carbon\Carbon::parse($formData['tanggal_test_drive'])->format('Y-m-d');
             }
@@ -236,7 +225,6 @@ class CheckSheetController extends Controller
             $checksheet = Checksheet::findOrFail($id);
             $currentUser = Auth::user();
 
-            // Check if user is authenticated
             if (!$currentUser) {
                 return response()->json([
                     'success' => false,
@@ -253,7 +241,6 @@ class CheckSheetController extends Controller
 
             $data = $request->all();
 
-            // Convert checkbox properly
             $checkboxFields = $this->getAllCheckboxFields();
             foreach ($checkboxFields as $field) {
                 $data[$field] = filter_var($request->input($field, false), FILTER_VALIDATE_BOOLEAN);
@@ -284,7 +271,6 @@ class CheckSheetController extends Controller
                 ->latest()
                 ->get()
                 ->map(function ($checksheet) {
-                    // Dapatkan booking terkait
                     $booking = $checksheet->booking;
 
                     return [
@@ -298,7 +284,6 @@ class CheckSheetController extends Controller
                         'filled_by_email' => $checksheet->user->email ?? '-',
                         'security' => $checksheet->booking->security?->name ?? '-',
                         'spv' => $checksheet->booking->supervisor?->name ?? '-',
-                        // Gunakan status approval dari booking
                         'status' => $booking->isApproved() ? 'approved' : ($booking->isPending() ? 'pending' : 'not_approved'),
                         'status_label' => $booking->isApproved() ? 'Disetujui' : ($booking->isPending() ? 'Menunggu' : 'Dibatalkan'),
 
@@ -344,7 +329,6 @@ class CheckSheetController extends Controller
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            // HEADER
             $sheet->mergeCells('A1:L1');
             $sheet->setCellValue('A1', 'Check Sheet Peminjaman & Pengembalian Unit Test Drive');
             $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
@@ -356,30 +340,25 @@ class CheckSheetController extends Controller
             $sheet->setCellValue('A2', 'Agung Toyota Jambi Pal 10');
             $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-            // Mulai dari row 4, langsung ke form data
             $row = 4;
 
-            // Baris 1: Nama Customer & Jam Kembali
             $sheet->setCellValue('A' . $row, 'Nama Customer:');
             $sheet->setCellValue('B' . $row, $checksheet->nama_customer ?? $checksheet->booking->nama_lengkap);
             $sheet->setCellValue('G' . $row, 'Jam Kembali:');
             $sheet->setCellValue('H' . $row, $checksheet->jam_kembali);
 
-            // Baris 2: Tanggal Test Drive & Tipe Mobil
             $row++;
             $sheet->setCellValue('A' . $row, 'Tanggal Test Drive:');
             $sheet->setCellValue('B' . $row, \Carbon\Carbon::parse($checksheet->tanggal_test_drive)->format('d/m/Y'));
             $sheet->setCellValue('G' . $row, 'Tipe Mobil:');
             $sheet->setCellValue('H' . $row, $checksheet->tipe_mobil);
 
-            // Baris 3: Jam Pinjam & No. Polisi
             $row++;
             $sheet->setCellValue('A' . $row, 'Jam Pinjam:');
             $sheet->setCellValue('B' . $row, $checksheet->jam_pinjam);
             $sheet->setCellValue('G' . $row, 'No. Polisi:');
             $sheet->setCellValueExplicit('H' . $row, $checksheet->no_polisi, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
 
-            // TABLE HEADER
             $row += 2;
             $sheet->mergeCells('A' . $row . ':C' . $row);
             $sheet->setCellValue('A' . $row, 'Kondisi Kendaraan Saat Di Pinjam');
@@ -409,7 +388,6 @@ class CheckSheetController extends Controller
                     ->getStartColor()->setARGB('FFE6E6E6');
             }
 
-            // DATA KONDISI
             $kondisiItems = [
                 'body_luar' => 'Body Luar (baret, penyok)',
                 'ban_velg' => 'Ban & Velg',
@@ -442,7 +420,6 @@ class CheckSheetController extends Controller
                 $row++;
             }
 
-            // BAHAN BAKAR
             $row++;
             $sheet->mergeCells('A' . $row . ':L' . $row);
             $sheet->setCellValue('A' . $row, 'Bahan Bakar');
@@ -456,7 +433,6 @@ class CheckSheetController extends Controller
             $sheet->setCellValue('G' . $row, 'Saat Kembali:');
             $sheet->setCellValue('H' . $row, $this->getBahanBakar($checksheet, 'kembali'));
 
-            // DOKUMEN
             $row += 2;
             $sheet->mergeCells('A' . $row . ':C' . $row);
             $sheet->setCellValue('A' . $row, 'Dokumen & Kunci Saat Di Pinjam');
@@ -485,7 +461,6 @@ class CheckSheetController extends Controller
                 $row++;
             }
 
-            // KELENGKAPAN TAMBAHAN
             $row++;
             $sheet->mergeCells('A' . $row . ':L' . $row);
             $sheet->setCellValue('A' . $row, 'Kelengkapan Tambahan');
@@ -505,7 +480,6 @@ class CheckSheetController extends Controller
                 ? \Carbon\Carbon::parse($checksheet->tanggal_penggantian_pewangi)->format('d/m/Y')
                 : '-');
 
-            // Column widths
             $sheet->getColumnDimension('A')->setWidth(30);
             $sheet->getColumnDimension('B')->setWidth(15);
             $sheet->getColumnDimension('C')->setWidth(40);
@@ -567,7 +541,6 @@ class CheckSheetController extends Controller
         }
     }
 
-    // HELPER METHODS
     private function getKondisi($checksheet, $item, $stage)
     {
         $baik = $checksheet->{$item . '_' . $stage . '_baik'};
@@ -578,7 +551,6 @@ class CheckSheetController extends Controller
         return '-';
     }
 
-    // Bahan bakar method yang benar
     private function getBahanBakar($checksheet, $stage)
     {
         $prefix = ($stage === 'pinjam') ? 'bahan_bakar_pinjam_' : 'bahan_bakar_pinjam_kembali_';
@@ -603,7 +575,6 @@ class CheckSheetController extends Controller
     private function getAllCheckboxFields(): array
     {
         return [
-            // Kondisi - pinjam
             'body_luar_pinjam_baik',
             'body_luar_pinjam_tidak_baik',
             'ban_velg_pinjam_baik',
@@ -620,7 +591,7 @@ class CheckSheetController extends Controller
             'ac_audio_pinjam_tidak_baik',
             'lampu_pinjam_baik',
             'lampu_pinjam_tidak_baik',
-            // Kondisi - kembali
+
             'body_luar_kembali_baik',
             'body_luar_kembali_tidak_baik',
             'ban_velg_kembali_baik',
@@ -637,7 +608,7 @@ class CheckSheetController extends Controller
             'ac_audio_kembali_tidak_baik',
             'lampu_kembali_baik',
             'lampu_kembali_tidak_baik',
-            // Bahan bakar
+
             'bahan_bakar_pinjam_1',
             'bahan_bakar_pinjam_2',
             'bahan_bakar_pinjam_3',
@@ -654,21 +625,21 @@ class CheckSheetController extends Controller
             'bahan_bakar_kembali_kembali_2',
             'bahan_bakar_kembali_kembali_3',
             'bahan_bakar_kembali_kembali_4',
-            // Dokumen - pinjam
+
             'stnk_pinjam_ada',
             'stnk_pinjam_tidak_ada',
             'kunci_utama_pinjam_ada',
             'kunci_utama_pinjam_tidak_ada',
             'remote_keyless_pinjam_ada',
             'remote_keyless_pinjam_tidak_ada',
-            // Dokumen - kembali
+
             'stnk_kembali_ada',
             'stnk_kembali_tidak_ada',
             'kunci_utama_kembali_ada',
             'kunci_utama_kembali_tidak_ada',
             'remote_keyless_kembali_ada',
             'remote_keyless_kembali_tidak_ada',
-            // Kelengkapan tambahan
+
             'air_mineral_pinjam_ada',
             'air_mineral_pinjam_tidak_ada',
             'air_mineral_kembali_ada',
@@ -691,7 +662,6 @@ class CheckSheetController extends Controller
         return $this->userHasRole($user, ['admin', 'security']);
     }
 
-    // Get checksheet summary by customer email 
     public function getChecksheetSummaryByEmail($email)
     {
         try {
@@ -709,7 +679,6 @@ class CheckSheetController extends Controller
                 if ($booking->checksheet) {
                     $checksheet = $booking->checksheet;
 
-                    // KONDISI KENDARAAN - Pinjam
                     $pinjamIssues = [];
                     if ($checksheet->body_luar_pinjam_tidak_baik) $pinjamIssues[] = 'Body Luar';
                     if ($checksheet->ban_velg_pinjam_tidak_baik) $pinjamIssues[] = 'Ban & Velg';
@@ -720,7 +689,6 @@ class CheckSheetController extends Controller
                     if ($checksheet->ac_audio_pinjam_tidak_baik) $pinjamIssues[] = 'AC & Audio';
                     if ($checksheet->lampu_pinjam_tidak_baik) $pinjamIssues[] = 'Lampu';
 
-                    // KONDISI KENDARAAN - Kembali
                     $kembaliIssues = [];
                     if ($checksheet->body_luar_kembali_tidak_baik) $kembaliIssues[] = 'Body Luar';
                     if ($checksheet->ban_velg_kembali_tidak_baik) $kembaliIssues[] = 'Ban & Velg';
@@ -731,7 +699,6 @@ class CheckSheetController extends Controller
                     if ($checksheet->ac_audio_kembali_tidak_baik) $kembaliIssues[] = 'AC & Audio';
                     if ($checksheet->lampu_kembali_tidak_baik) $kembaliIssues[] = 'Lampu';
 
-                    // PERUBAHAN KONDISI (Baik → Tidak Baik)
                     $changedConditions = [];
                     if ($checksheet->body_luar_pinjam_baik && $checksheet->body_luar_kembali_tidak_baik)
                         $changedConditions[] = 'Body Luar';
@@ -750,36 +717,30 @@ class CheckSheetController extends Controller
                     if ($checksheet->lampu_pinjam_baik && $checksheet->lampu_kembali_tidak_baik)
                         $changedConditions[] = 'Lampu';
 
-                    // BAHAN BAKAR - Get level pinjam & kembali
                     $fuelPinjam = $this->getBahanBakar($checksheet, 'pinjam');
                     $fuelKembali = $this->getBahanBakar($checksheet, 'kembali');
                     $fuelChanged = ($fuelPinjam !== $fuelKembali && $fuelPinjam !== '-' && $fuelKembali !== '-');
 
-                    // DOKUMEN & KUNCI - Check hilang/bertambah
                     $dokumenIssues = [];
 
-                    // STNK
                     if ($checksheet->stnk_pinjam_ada && $checksheet->stnk_kembali_tidak_ada) {
                         $dokumenIssues[] = 'STNK Hilang';
                     } elseif ($checksheet->stnk_pinjam_tidak_ada && $checksheet->stnk_kembali_ada) {
                         $dokumenIssues[] = 'STNK Bertambah';
                     }
 
-                    // Kunci Utama
                     if ($checksheet->kunci_utama_pinjam_ada && $checksheet->kunci_utama_kembali_tidak_ada) {
                         $dokumenIssues[] = 'Kunci Utama Hilang';
                     } elseif ($checksheet->kunci_utama_pinjam_tidak_ada && $checksheet->kunci_utama_kembali_ada) {
                         $dokumenIssues[] = 'Kunci Utama Bertambah';
                     }
 
-                    // Remote/Keyless
                     if ($checksheet->remote_keyless_pinjam_ada && $checksheet->remote_keyless_kembali_tidak_ada) {
                         $dokumenIssues[] = 'Remote/Keyless Hilang';
                     } elseif ($checksheet->remote_keyless_pinjam_tidak_ada && $checksheet->remote_keyless_kembali_ada) {
                         $dokumenIssues[] = 'Remote/Keyless Bertambah';
                     }
 
-                    // KELENGKAPAN TAMBAHAN
                     $kelengkapanIssues = [];
                     if ($checksheet->air_mineral_pinjam_ada && $checksheet->air_mineral_kembali_tidak_ada) {
                         $kelengkapanIssues[] = 'Air Mineral Hilang';
@@ -787,12 +748,10 @@ class CheckSheetController extends Controller
                         $kelengkapanIssues[] = 'Air Mineral Bertambah';
                     }
 
-                    // TANGGAL PENGGANTIAN PEWANGI
                     $tanggalPewangi = $checksheet->tanggal_penggantian_pewangi
                         ? \Carbon\Carbon::parse($checksheet->tanggal_penggantian_pewangi)->format('d F Y')
                         : null;
 
-                    // Determine overall status
                     $hasIssues = !empty($pinjamIssues) || !empty($kembaliIssues) ||
                         !empty($changedConditions) || $fuelChanged ||
                         !empty($dokumenIssues) || !empty($kelengkapanIssues);
@@ -807,24 +766,14 @@ class CheckSheetController extends Controller
                         'status_label' => $hasIssues ? 'Ada Masalah' : 'Semua Baik',
                         'jam_pinjam' => $checksheet->jam_pinjam,
                         'jam_kembali' => $checksheet->jam_kembali,
-
-                        // Kondisi Kendaraan
                         'pinjam_issues' => $pinjamIssues,
                         'kembali_issues' => $kembaliIssues,
                         'changed_conditions' => $changedConditions,
-
-                        // Bahan Bakar
                         'fuel_pinjam' => $fuelPinjam,
                         'fuel_kembali' => $fuelKembali,
                         'fuel_changed' => $fuelChanged,
-
-                        // Dokumen & Kunci
                         'dokumen_issues' => $dokumenIssues,
-
-                        // Kelengkapan Tambahan
                         'kelengkapan_issues' => $kelengkapanIssues,
-
-                        // Tanggal Penggantian Pewangi
                         'tanggal_penggantian_pewangi' => $tanggalPewangi,
                     ];
                 }
@@ -848,16 +797,13 @@ class CheckSheetController extends Controller
         }
     }
 
-    // Delete checksheet
     public function destroy($id)
     {
         try {
             $checksheet = Checksheet::findOrFail($id);
 
-            // Check authorization
             $currentUser = Auth::user();
             
-            // Check if user is authenticated
             if (!$currentUser) {
                 return response()->json([
                     'success' => false,
@@ -872,11 +818,9 @@ class CheckSheetController extends Controller
                 ], 403);
             }
 
-            // Store booking_id before delete for logging
             $bookingId = $checksheet->booking_id;
             $customerName = $checksheet->nama_customer;
 
-            // Delete checksheet
             $checksheet->delete();
 
             Log::info('✅ Checksheet deleted:', [

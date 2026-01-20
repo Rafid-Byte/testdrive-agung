@@ -11,16 +11,13 @@ use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
-    // Get All Bookings
     public function index()
     {
         try {
             $user = Auth::user();
 
-            // TEST DRIVE BOOKINGS
             $testDriveQuery = TestDriveBooking::with(['supervisor', 'security', 'salesUser']);
 
-            // Filter based on user role
             if ($user->role === 'branch_manager') {
                 $testDriveQuery->whereIn('status', [
                     'Diproses',
@@ -31,7 +28,6 @@ class BookingController extends Controller
                     'Dibatalkan'
                 ]);
             } elseif ($user->role === 'security') {
-                // Security: Only see confirmed bookings
                 $testDriveQuery->whereIn('status', [
                     'Dikonfirmasi',
                     'Sedang test drive',
@@ -61,7 +57,6 @@ class BookingController extends Controller
             $testDriveBookings = $testDriveQuery->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($booking) {
-                    // Approval status mapping
                     $approvalStatus = 'pending';
                     $approvalLabel = 'Menunggu';
 
@@ -98,7 +93,6 @@ class BookingController extends Controller
                     ];
                 });
 
-            // PAMERAN BOOKINGS
             $pameranQuery = PameranBooking::with(['supervisor', 'security']);
 
             if ($user->role === 'branch_manager') {
@@ -160,7 +154,6 @@ class BookingController extends Controller
                     ];
                 });
 
-            // Merge & Sort
             $allBookings = $testDriveBookings->concat($pameranBookings)
                 ->sortByDesc('rawDate')
                 ->values();
@@ -187,11 +180,9 @@ class BookingController extends Controller
         }
     }
 
-    // Get Staff Data from users table
     public function getStaffData()
     {
         try {
-            // Get SPV from users table
             $supervisors = User::where('role', 'spv')
                 ->select('id', 'name', 'email')
                 ->orderBy('name')
@@ -205,7 +196,6 @@ class BookingController extends Controller
                     ];
                 });
 
-            // Get Security from users table
             $securities = User::where('role', 'security')
                 ->select('id', 'name', 'email')
                 ->orderBy('name')
@@ -235,7 +225,6 @@ class BookingController extends Controller
         }
     }
 
-    // Get Customer Data
     public function getCustomerData()
     {
         try {
@@ -273,7 +262,6 @@ class BookingController extends Controller
                 ];
             }
 
-            // Load checksheet summary untuk setiap customer
             foreach ($customerData as $name => &$customer) {
                 try {
                     $summaryResponse = app(CheckSheetController::class)
@@ -309,7 +297,6 @@ class BookingController extends Controller
         }
     }
 
-    // Store Manual Booking (SPV/Admin Only)
     public function storeManual(Request $request)
     {
         try {
@@ -332,7 +319,6 @@ class BookingController extends Controller
                 'event_location' => 'nullable|string|max:255',
             ]);
 
-            // SPV manual booking starts as "Menunggu" (pending admin approval)
             $validated['status'] = 'Menunggu';
 
             $booking = TestDriveBooking::create($validated);
@@ -357,11 +343,9 @@ class BookingController extends Controller
         }
     }
 
-    // Store Booking from Welcome Page (Sales)
     public function store(Request $request)
     {
         try {
-            // Check if user is authenticated
             if (!Auth::check()) {
                 Log::warning('❌ Unauthenticated booking attempt from IP: ' . $request->ip());
                 return response()->json([
@@ -373,7 +357,6 @@ class BookingController extends Controller
                 ], 401);
             }
 
-            // Check if user is Sales or Admin
             $user = Auth::user();
             if (!in_array($user->role, ['sales', 'admin'])) {
                 Log::warning('❌ Unauthorized booking attempt', [
@@ -394,14 +377,12 @@ class BookingController extends Controller
 
             Log::info('🚀 Booking request received:', $request->all());
 
-            // Check booking type
             $bookingType = $request->input('booking_type', 'test_drive');
 
             if ($bookingType === 'pameran') {
                 return $this->storePameranBooking($request);
             }
 
-            // Test Drive validation
             $validated = $request->validate([
                 'car' => 'required|string|max:100',
                 'sales_user_id' => 'required|exists:users,id',
@@ -415,7 +396,6 @@ class BookingController extends Controller
                 'test_drive_location' => 'required|string|max:255'
             ]);
 
-            // Get SPV yang dipilih sales
             $selectedSPV = User::findOrFail($validated['sales_user_id']);
 
             if ($selectedSPV->role !== 'spv') {
@@ -431,7 +411,6 @@ class BookingController extends Controller
                 'spv_name' => $selectedSPV->name
             ]);
 
-            // Create booking with supervisor_user_id
             $booking = TestDriveBooking::create([
                 'nama_lengkap' => $validated['customer_name'],
                 'nomor_telepon' => $validated['phone'],
@@ -482,7 +461,6 @@ class BookingController extends Controller
         }
     }
 
-    // Store Pameran/Movex Booking
     private function storePameranBooking(Request $request)
     {
         try {
@@ -503,7 +481,6 @@ class BookingController extends Controller
 
             Log::info('✅ Pameran validation passed');
 
-            // Get SPV from sales_user_id
             $selectedSPV = User::findOrFail($validated['sales_user_id']);
 
             if ($selectedSPV->role !== 'spv') {
@@ -513,7 +490,6 @@ class BookingController extends Controller
                 ], 400);
             }
 
-            // Create pameran booking with supervisor_user_id
             $booking = PameranBooking::create([
                 'nama_pic' => $validated['pic_name'],
                 'nomor_telepon' => $validated['pic_phone'],
@@ -564,11 +540,9 @@ class BookingController extends Controller
         }
     }
 
-    // Get SPV List untuk Sales Booking Form
     public function getSPVList(Request $request)
     {
         try {
-            // Get semua user dengan role SPV
             $spvList = User::where('role', 'spv')
                 ->select('id', 'name', 'email')
                 ->orderBy('name', 'asc')
@@ -600,7 +574,6 @@ class BookingController extends Controller
         }
     }
 
-    // Update Booking Status - Role-based status update dengan validation
     public function updateStatus(Request $request, $id)
     {
         try {
@@ -614,7 +587,6 @@ class BookingController extends Controller
                 'booking_type' => 'required|in:test_drive,pameran'
             ]);
 
-            // Query HANYA tabel yang sesuai dengan booking_type dari frontend
             if ($validated['booking_type'] === 'test_drive') {
                 $booking = TestDriveBooking::find($id);
                 $bookingTypeName = 'Test Drive';
@@ -623,7 +595,6 @@ class BookingController extends Controller
                 $bookingTypeName = 'Pameran/Movex';
             }
 
-            // Check if booking exists
             if (!$booking) {
                 return response()->json([
                     'success' => false,
@@ -639,7 +610,6 @@ class BookingController extends Controller
                 'user_role' => $user->role
             ]);
 
-            // VALIDATE: Status must match booking type
             if ($validated['booking_type'] === 'pameran' && $validated['status'] === 'Sedang test drive') {
                 return response()->json([
                     'success' => false,
@@ -654,9 +624,7 @@ class BookingController extends Controller
                 ], 400);
             }
 
-            // BRANCH MANAGER - SPECIAL HANDLING
             if ($user->role === 'branch_manager') {
-                // Branch Manager can ONLY set Dikonfirmasi or Dibatalkan
                 if (!in_array($validated['status'], ['Dikonfirmasi', 'Dibatalkan'])) {
                     return response()->json([
                         'success' => false,
@@ -664,7 +632,6 @@ class BookingController extends Controller
                     ], 403);
                 }
 
-                // Check current status
                 if ($validated['status'] === 'Dikonfirmasi' && $booking->status !== 'Diproses') {
                     return response()->json([
                         'success' => false,
@@ -679,7 +646,6 @@ class BookingController extends Controller
                     ], 403);
                 }
 
-                // APPROVED - Update and return immediately
                 $booking->update(['status' => $validated['status']]);
 
                 Log::info('✅ Status updated by Branch Manager', [
@@ -695,7 +661,6 @@ class BookingController extends Controller
                 ]);
             }
 
-            // SPV VALIDATION
             if ($user->role === 'spv') {
                 if ($booking->status !== 'Menunggu') {
                     return response()->json([
@@ -721,7 +686,6 @@ class BookingController extends Controller
                 ]);
             }
 
-            // SECURITY VALIDATION
             if ($user->role === 'security') {
                 $validInProgressStatus = ($validated['booking_type'] === 'pameran') ? 'Sedang Pameran' : 'Sedang test drive';
                 $allowedStatuses = [$validInProgressStatus, 'Selesai', 'Perawatan'];
@@ -750,7 +714,6 @@ class BookingController extends Controller
                 ]);
             }
 
-            // ADMIN - FULL ACCESS
             if ($user->role === 'admin') {
                 $booking->update(['status' => $validated['status']]);
                 Log::info('✅ Status updated by Admin');
@@ -762,7 +725,6 @@ class BookingController extends Controller
                 ]);
             }
 
-            // UNAUTHORIZED ROLE
             return response()->json([
                 'success' => false,
                 'message' => 'Anda tidak memiliki izin untuk mengubah status booking'
@@ -778,7 +740,6 @@ class BookingController extends Controller
         }
     }
 
-    // Update Customer Data (SPV/Admin only)
     public function updateCustomer(Request $request)
     {
         try {
@@ -792,7 +753,6 @@ class BookingController extends Controller
                 'supervisor_user_id' => 'nullable|exists:users,id',
             ]);
 
-            // Prepare update data - only include supervisor if provided
             $updateData = [
                 'nama_lengkap' => $validated['nama_lengkap'],
                 'nomor_telepon' => $validated['nomor_telepon'],
@@ -801,7 +761,6 @@ class BookingController extends Controller
                 'alamat' => $validated['alamat'],
             ];
 
-            // Only update supervisor if value is provided
             if (isset($validated['supervisor_user_id']) && !empty($validated['supervisor_user_id'])) {
                 $updateData['supervisor_user_id'] = $validated['supervisor_user_id'];
             }
@@ -838,7 +797,6 @@ class BookingController extends Controller
         }
     }
 
-    // Delete Customer (SPV/Admin only)
     public function deleteCustomer(Request $request)
     {
         try {
@@ -862,7 +820,6 @@ class BookingController extends Controller
         }
     }
 
-    // Get Notifications
     public function getNotifications()
     {
         try {
@@ -891,7 +848,6 @@ class BookingController extends Controller
         }
     }
 
-    // Check New Notifications
     public function getNewNotifications()
     {
         try {
@@ -919,7 +875,6 @@ class BookingController extends Controller
         }
     }
 
-    // Mark Notification as Read
     public function markNotificationRead($id)
     {
         try {
@@ -931,7 +886,6 @@ class BookingController extends Controller
         }
     }
 
-    // Get Vehicle Status
     public function getVehicleStatus()
     {
         try {
@@ -947,7 +901,6 @@ class BookingController extends Controller
             $vehicleStatus = [];
 
             foreach ($vehicles as $vehicle) {
-                // Test Drive Booking
                 $testDriveBooking = TestDriveBooking::where('mobil_test_drive', $vehicle)
                     ->whereNotIn('status', ['Selesai', 'Dibatalkan'])
                     ->whereIn('status', [
@@ -960,7 +913,6 @@ class BookingController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->first();
 
-                // Pameran Booking
                 $pameranBooking = PameranBooking::where('mobil', $vehicle)
                     ->whereNotIn('status', ['Selesai', 'Dibatalkan'])
                     ->whereIn('status', [
@@ -973,11 +925,9 @@ class BookingController extends Controller
                     ->orderBy('created_at', 'desc')
                     ->first();
 
-                // Prioritas - Cek booking mana yang lebih aktif
                 $activeBooking = null;
                 $bookingType = null;
 
-                // Jika ada pameran booking, prioritaskan itu
                 if ($pameranBooking) {
                     $activeBooking = $pameranBooking;
                     $bookingType = 'pameran';
@@ -987,7 +937,6 @@ class BookingController extends Controller
                 }
 
                 if ($activeBooking) {
-                    // Status mapping dengan informasi booking type
                     switch ($activeBooking->status) {
                         case 'Menunggu':
                         case 'Diproses':
@@ -1048,7 +997,6 @@ class BookingController extends Controller
                             break;
                     }
                 } else {
-                    // Tidak ada booking aktif = Tersedia
                     $vehicleStatus[$vehicle] = [
                         'available' => true,
                         'status' => 'Tersedia',
@@ -1073,7 +1021,6 @@ class BookingController extends Controller
         }
     }
 
-    // Update Pameran Booking (SPV/Admin only)
     public function updatePameranBooking(Request $request, $id)
     {
         try {
