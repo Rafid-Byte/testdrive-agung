@@ -15,14 +15,11 @@ class TestDriveBooking extends Model
         'nomor_telepon',
         'email',
         'no_ktp',
-        'alamat',
         'mobil_test_drive',
         'tanggal_booking',
         'status',
-        'supervisor_user_id', 
-        'security_user_id',   
-        'sales_user_id',
-
+        'supervisor_user_id',
+        'supervisor_user_name', // ✅ nama supervisor tersimpan langsung di tabel
         'sales_name',
         'sales_phone',
         'test_drive_time',
@@ -38,19 +35,9 @@ class TestDriveBooking extends Model
         return $this->belongsTo(User::class, 'supervisor_user_id')->where('role', 'spv');
     }
 
-    public function security()
-    {
-        return $this->belongsTo(User::class, 'security_user_id')->where('role', 'security');
-    }
-
     public function checksheet()
     {
         return $this->hasOne(Checksheet::class, 'booking_id');
-    }
-
-    public function salesUser()
-    {
-        return $this->belongsTo(User::class, 'sales_user_id');
     }
 
     public function getFormattedDateAttribute()
@@ -58,14 +45,13 @@ class TestDriveBooking extends Model
         return \Carbon\Carbon::parse($this->tanggal_booking)->locale('id')->translatedFormat('d F Y');
     }
 
+    // ✅ Prioritaskan supervisor_user_name (tersimpan di DB),
+    //    fallback ke relasi jika kolom kosong (untuk data lama)
     public function getSupervisorNameAttribute()
     {
-        return $this->supervisor ? $this->supervisor->name : '-';
-    }
-
-    public function getSecurityNameAttribute()
-    {
-        return $this->security ? $this->security->name : '-';
+        return $this->supervisor_user_name
+            ?? $this->supervisor?->name
+            ?? '-';
     }
 
     public function hasChecksheet(): bool
@@ -76,11 +62,7 @@ class TestDriveBooking extends Model
     public function isApproved(): bool
     {
         return in_array($this->status, [
-            'Dikonfirmasi',
-            'Diproses',
-            'Sedang test drive',
-            'Selesai',
-            'Perawatan'
+            'Dikonfirmasi', 'Diproses', 'Sedang test drive', 'Selesai', 'Perawatan'
         ]);
     }
 
@@ -96,33 +78,24 @@ class TestDriveBooking extends Model
 
     public function getApprovalStatusAttribute()
     {
-        if ($this->status === 'Dikonfirmasi') {
-            return 'approved';
-        }
-
-        if ($this->status === 'Dibatalkan') {
-            return 'not_approved';
-        }
-
+        if ($this->status === 'Dikonfirmasi') return 'approved';
+        if ($this->status === 'Dibatalkan')   return 'not_approved';
         return 'pending';
     }
 
     public function getApprovalLabelAttribute()
     {
         return match ($this->approval_status) {
-            'approved' => 'Disetujui',
+            'approved'     => 'Disetujui',
             'not_approved' => 'Dibatalkan',
-            default => 'Menunggu',
+            default        => 'Menunggu',
         };
     }
 
     public function canAccessChecksheet(): bool
     {
         return in_array($this->status, [
-            'Dikonfirmasi',
-            'Sedang test drive',
-            'Selesai',
-            'Perawatan'
+            'Dikonfirmasi', 'Sedang test drive', 'Selesai', 'Perawatan'
         ]);
     }
 
@@ -138,13 +111,9 @@ class TestDriveBooking extends Model
 
     public function scopeDateRange($query, $from, $to)
     {
-        if ($from && $to) {
-            return $query->whereBetween('tanggal_booking', [$from, $to]);
-        } elseif ($from) {
-            return $query->where('tanggal_booking', '>=', $from);
-        } elseif ($to) {
-            return $query->where('tanggal_booking', '<=', $to);
-        }
+        if ($from && $to) return $query->whereBetween('tanggal_booking', [$from, $to]);
+        elseif ($from)    return $query->where('tanggal_booking', '>=', $from);
+        elseif ($to)      return $query->where('tanggal_booking', '<=', $to);
         return $query;
     }
 }

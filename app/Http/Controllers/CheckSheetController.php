@@ -19,7 +19,7 @@ class CheckSheetController extends Controller
             session()->forget('error');
         }
 
-        $testDriveBookings = TestDriveBooking::with(['supervisor', 'security', 'checksheet'])
+        $testDriveBookings = TestDriveBooking::with(['supervisor', 'checksheet'])
             ->whereNotNull('supervisor_user_id')
             ->orderBy('tanggal_booking', 'desc')
             ->get()
@@ -135,7 +135,7 @@ class CheckSheetController extends Controller
     public function show($id)
     {
         try {
-            $checksheet = Checksheet::with(['booking.supervisor', 'booking.security', 'user'])
+            $checksheet = Checksheet::with(['booking.supervisor', 'user'])
                 ->findOrFail($id);
 
             $currentUser = Auth::user();
@@ -195,7 +195,7 @@ class CheckSheetController extends Controller
                         'car' => $checksheet->booking->mobil_test_drive,
                         'phone' => $checksheet->booking->nomor_telepon,
                         'spv' => $checksheet->booking->supervisor?->name ?? '-',
-                        'security' => $checksheet->booking->security?->name ?? '-',
+                        'security' => '-',
                     ],
                     'form_data' => $formData
                 ]
@@ -267,7 +267,7 @@ class CheckSheetController extends Controller
     public function getChecksheets()
     {
         try {
-            $checksheets = Checksheet::with(['booking.supervisor', 'booking.security', 'user'])
+            $checksheets = Checksheet::with(['booking.supervisor', 'user'])
                 ->latest()
                 ->get()
                 ->map(function ($checksheet) {
@@ -282,7 +282,7 @@ class CheckSheetController extends Controller
                         'jam_kembali' => $checksheet->jam_kembali,
                         'filled_by' => $checksheet->user->name ?? 'Unknown',
                         'filled_by_email' => $checksheet->user->email ?? '-',
-                        'security' => $checksheet->booking->security?->name ?? '-',
+                        'security' => '-',
                         'spv' => $checksheet->booking->supervisor?->name ?? '-',
                         'status' => $booking->isApproved() ? 'approved' : ($booking->isPending() ? 'pending' : 'not_approved'),
                         'status_label' => $booking->isApproved() ? 'Disetujui' : ($booking->isPending() ? 'Menunggu' : 'Dibatalkan'),
@@ -669,7 +669,7 @@ class CheckSheetController extends Controller
             Log::info('Getting checksheet summary for email: ' . $decodedEmail);
 
             $bookings = TestDriveBooking::where('email', $decodedEmail)
-                ->with(['checksheet', 'supervisor', 'security'])
+                ->with(['checksheet', 'supervisor'])
                 ->orderBy('tanggal_booking', 'desc')
                 ->get();
 

@@ -15,13 +15,11 @@ Route::get('/', function () {
 // Get SPV List untuk Sales (Public, bisa diakses tanpa auth)
 Route::get('/api/spv-list', [BookingController::class, 'getSPVList'])->name('api.spv.list');
 
-// Booking from welcome page (Only authenticated users, preferably Sales)
+// ✅ FIX Bug #3: Hapus route duplikat - sebelumnya ada 2 route POST /booking/store
+// yang kedua override middleware auth, sehingga siapapun bisa booking tanpa login.
 Route::post('/booking/store', [BookingController::class, 'store'])
     ->middleware('auth')
     ->name('booking.store');
-
-// PUBLIC: Booking from welcome page (Sales submit booking)
-Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
 
 // AUTHENTICATION ROUTES
 require __DIR__ . '/auth.php';
@@ -97,7 +95,7 @@ Route::put('/pameran/{id}', [BookingController::class, 'updatePameranBooking'])
 // PAMERAN INFO ROUTE - Admin & Security only
 Route::middleware(['auth', 'role:admin,security'])->group(function () {
     Route::get('/pameran-info', [PameranInfoController::class, 'index'])->name('pameran-info');
-    
+
     // API: Pameran Info operations
     Route::get('/api/pameran-info', [PameranInfoController::class, 'getPameranBookings'])->name('api.pameran-info');
     Route::get('/api/pameran-info/{id}', [PameranInfoController::class, 'show'])->name('api.pameran-info.show');

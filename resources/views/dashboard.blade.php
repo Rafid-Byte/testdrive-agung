@@ -3253,15 +3253,12 @@
 
                                         if (this.newBooking.bookingType === 'test_drive') {
                                             bookingData.no_ktp = this.newBooking.ktp.trim();
-                                            bookingData.alamat = this.newBooking.testDriveLocation.trim();
+                                            bookingData.test_drive_location = this.newBooking.testDriveLocation.trim();
                                             bookingData.sales_name = this.newBooking.salesName.trim();
                                             bookingData.sales_phone = this.newBooking.salesPhone.trim();
                                             bookingData.test_drive_time = this.newBooking.testDriveTime;
-                                            bookingData.test_drive_location = this.newBooking.testDriveLocation
-                                                .trim();
                                         } else {
                                             bookingData.no_ktp = '0000000000000000';
-                                            bookingData.alamat = this.newBooking.targetProspect.trim();
                                             bookingData.event_date = this.newBooking.eventDate;
                                             bookingData.event_location = this.newBooking.eventLocation.trim();
                                         }

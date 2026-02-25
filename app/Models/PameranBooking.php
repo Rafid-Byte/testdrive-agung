@@ -11,7 +11,6 @@ class PameranBooking extends Model
 
     protected $fillable = [
         'booking_type',
-        'sales_user_id',
         'nama_pic',
         'nomor_telepon',
         'email',
@@ -22,32 +21,27 @@ class PameranBooking extends Model
         'tanggal_selesai',
         'tanggal_acara',
         'lokasi_acara',
-        'supervisor_user_id', 
-        'security_user_id',   
+        'supervisor_user_id',
+        'supervisor_user_name', // ✅ BARU: nama supervisor tersimpan langsung
         'status'
+        // ✅ security_user_id DIHAPUS
+        // ✅ sales_user_id DIHAPUS
     ];
 
     protected $casts = [
         'tanggal_booking' => 'date',
-        'tanggal_mulai' => 'date',
+        'tanggal_mulai'   => 'date',
         'tanggal_selesai' => 'date',
-        'tanggal_acara' => 'date',
+        'tanggal_acara'   => 'date',
     ];
 
+    // ✅ Hanya supervisor yang masih relevan
     public function supervisor()
     {
         return $this->belongsTo(User::class, 'supervisor_user_id')->where('role', 'spv');
     }
 
-    public function security()
-    {
-        return $this->belongsTo(User::class, 'security_user_id')->where('role', 'security');
-    }
-
-    public function salesUser()
-    {
-        return $this->belongsTo(User::class, 'sales_user_id');
-    }
+    // ✅ security() dan salesUser() DIHAPUS — kolom sudah tidak ada di tabel
 
     public function getFormattedDateAttribute()
     {
@@ -56,40 +50,39 @@ class PameranBooking extends Model
 
     public function getFormattedEventDateAttribute()
     {
-        return $this->tanggal_acara ? 
-               \Carbon\Carbon::parse($this->tanggal_acara)->locale('id')->translatedFormat('d F Y') : 
+        return $this->tanggal_acara ?
+               \Carbon\Carbon::parse($this->tanggal_acara)->locale('id')->translatedFormat('d F Y') :
                '-';
     }
 
     public function getFormattedStartDateAttribute()
     {
-        return $this->tanggal_mulai ? 
-               \Carbon\Carbon::parse($this->tanggal_mulai)->locale('id')->translatedFormat('d F Y') : 
+        return $this->tanggal_mulai ?
+               \Carbon\Carbon::parse($this->tanggal_mulai)->locale('id')->translatedFormat('d F Y') :
                '-';
     }
 
     public function getFormattedEndDateAttribute()
     {
-        return $this->tanggal_selesai ? 
-               \Carbon\Carbon::parse($this->tanggal_selesai)->locale('id')->translatedFormat('d F Y') : 
+        return $this->tanggal_selesai ?
+               \Carbon\Carbon::parse($this->tanggal_selesai)->locale('id')->translatedFormat('d F Y') :
                '-';
     }
 
+    // ✅ Prioritaskan supervisor_user_name (kolom langsung),
+    //    fallback ke relasi untuk data lama yang belum ter-migrate
     public function getSupervisorNameAttribute()
     {
-        return $this->supervisor ? $this->supervisor->name : '-';
-    }
-
-    public function getSecurityNameAttribute()
-    {
-        return $this->security ? $this->security->name : '-';
+        return $this->supervisor_user_name
+            ?? $this->supervisor?->name
+            ?? '-';
     }
 
     public function isApproved(): bool
     {
         return in_array($this->status, [
             'Dikonfirmasi',
-            'Diproses', 
+            'Diproses',
             'Sedang Pameran',
             'Selesai'
         ]);
