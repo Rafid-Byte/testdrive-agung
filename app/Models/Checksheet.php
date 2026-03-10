@@ -107,8 +107,7 @@ class Checksheet extends Model
         'air_mineral_kembali_tidak_ada',
         
         'tanggal_penggantian_pewangi',
-        'status',
-        'notes',
+        'status_mobil',
     ];
 
     protected $casts = [
@@ -205,10 +204,6 @@ class Checksheet extends Model
         return $query->where('tipe_mobil', $carType);
     }
 
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('status', $status);
-    }
 
     public function getFuelLevelPinjamAttribute()
     {
@@ -252,21 +247,4 @@ class Checksheet extends Model
                $this->lampu_kembali_tidak_baik;
     }
 
-    public function getStatusBadgeColor()
-    {
-        return match($this->status) {
-            'approved' => 'green',
-            'rejected' => 'red',
-            default => 'yellow',
-        };
-    }
-
-    public function getStatusLabel()
-    {
-        return match($this->status) {
-            'approved' => 'Disetujui',
-            'rejected' => 'Ditolak',
-            default => 'Menunggu',
-        };
-    }
 }

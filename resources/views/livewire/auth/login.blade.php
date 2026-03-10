@@ -78,7 +78,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 {{ __('Sign in to your account') }}
             </h1>
             <p class="text-sm text-zinc-600 dark:text-zinc-400">
-                {{ __('Welcome back! Please enter your details.') }}
+                {{ __('Welcome back! Please enter your email and password.') }}
             </p>
         </div>
     </div>
@@ -117,15 +117,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         <label for="password" class="block text-sm font-medium text-zinc-900 dark:text-zinc-100">
                             {{ __('Password') }}
                         </label>
-                        @if (Route::has('password.request'))
-                            <flux:link 
-                                class="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300" 
-                                :href="route('password.request')" 
-                                wire:navigate
-                            >
-                                {{ __('Forgot password?') }}
-                            </flux:link>
-                        @endif
                     </div>
                     <flux:input
                         wire:model="password"
@@ -137,20 +128,6 @@ new #[Layout('components.layouts.auth')] class extends Component {
                         viewable
                         class="h-11"
                     />
-                </div>
-
-                <!-- Remember Me -->
-                <div class="flex items-center justify-between pt-1">
-                    <div class="flex items-center">
-                        <flux:checkbox 
-                            wire:model="remember" 
-                            id="remember"
-                            class="rounded"
-                        />
-                        <label for="remember" class="ml-2 text-sm text-zinc-700 dark:text-zinc-300 cursor-pointer select-none">
-                            {{ __('Remember for 30 days') }}
-                        </label>
-                    </div>
                 </div>
 
                 <!-- Submit Button -->
@@ -168,26 +145,10 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </div>
     </div>
 
-    <!-- Register Link -->
-    @if (Route::has('register'))
-        <div class="mt-6 text-center">
-            <p class="text-sm text-zinc-600 dark:text-zinc-400">
-                {{ __('Don\'t have an account?') }}
-                <flux:link 
-                    :href="route('register')" 
-                    wire:navigate
-                    class="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 ml-1"
-                >
-                    {{ __('Sign up for free') }}
-                </flux:link>
-            </p>
-        </div>
-    @endif
-
     <!-- Footer -->
     <div class="mt-8 pt-6 border-t border-zinc-200 dark:border-zinc-800">
         <p class="text-center text-xs text-zinc-400 dark:text-zinc-600 mt-4">
-            {{ __('© 2025 Toyota Paal 10. All rights reserved.') }}
+            {{ __('© 2026 Toyota Paal 10. All rights reserved.') }}
         </p>
     </div>
 </div>

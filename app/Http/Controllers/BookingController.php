@@ -511,11 +511,25 @@ class BookingController extends Controller
                 if (!in_array($booking->status, ['Dikonfirmasi', $validInProgress, 'Selesai', 'Perawatan']))
                     return response()->json(['success' => false, 'message' => 'Booking belum dikonfirmasi.'], 403);
                 $booking->update(['status' => $validated['status']]);
+                // Sync checksheet status_mobil jika ada checksheet terkait
+                if ($validated['booking_type'] === 'test_drive') {
+                    $checksheet = Checksheet::where('booking_id', $booking->id)->first();
+                    if ($checksheet && in_array($validated['status'], ['Sedang test drive', 'Selesai', 'Perawatan'])) {
+                        $checksheet->update(['status_mobil' => $validated['status']]);
+                    }
+                }
                 return response()->json(['success' => true, 'message' => 'Status berhasil diupdate!', 'data' => $booking]);
             }
 
             if ($user->role === 'admin') {
                 $booking->update(['status' => $validated['status']]);
+                // Sync checksheet status_mobil jika ada checksheet terkait
+                if ($validated['booking_type'] === 'test_drive') {
+                    $checksheet = Checksheet::where('booking_id', $booking->id)->first();
+                    if ($checksheet && in_array($validated['status'], ['Sedang test drive', 'Selesai', 'Perawatan'])) {
+                        $checksheet->update(['status_mobil' => $validated['status']]);
+                    }
+                }
                 return response()->json(['success' => true, 'message' => 'Status berhasil diupdate!', 'data' => $booking]);
             }
 

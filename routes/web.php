@@ -15,8 +15,6 @@ Route::get('/', function () {
 // Get SPV List untuk Sales (Public, bisa diakses tanpa auth)
 Route::get('/api/spv-list', [BookingController::class, 'getSPVList'])->name('api.spv.list');
 
-// ✅ FIX Bug #3: Hapus route duplikat - sebelumnya ada 2 route POST /booking/store
-// yang kedua override middleware auth, sehingga siapapun bisa booking tanpa login.
 Route::post('/booking/store', [BookingController::class, 'store'])
     ->middleware('auth')
     ->name('booking.store');
@@ -65,6 +63,7 @@ Route::middleware(['auth', 'role:admin,security'])->group(function () {
     Route::post('/checksheet/store', [CheckSheetController::class, 'store'])->name('checksheet.store');
     Route::get('/checksheet/{id}', [CheckSheetController::class, 'show'])->name('checksheet.show');
     Route::put('/checksheet/{id}', [CheckSheetController::class, 'update'])->name('checksheet.update');
+    Route::put('/checksheet/booking/{bookingId}/status-mobil', [CheckSheetController::class, 'updateStatusMobil']);
     Route::delete('/checksheet/{id}', [CheckSheetController::class, 'destroy'])->name('checksheet.destroy');
 
     // API: Get checksheets

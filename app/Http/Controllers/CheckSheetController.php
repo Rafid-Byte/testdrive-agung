@@ -23,17 +23,20 @@ class CheckSheetController extends Controller
             ->whereNotNull('supervisor_user_id')
             ->orderBy('tanggal_booking', 'desc')
             ->get()
-            ->map(function ($booking) {
+            ->map(function (TestDriveBooking $booking) {
+                // Status approval: hanya 'Disetujui' saat BM sudah konfirmasi (Dikonfirmasi ke atas)
+                // 'Menunggu' = Menunggu + Diproses (SPV approve, tapi BM belum konfirmasi)
                 $approvalStatus = 'pending';
-                $approvalLabel = 'Menunggu';
+                $approvalLabel  = 'Menunggu';
 
-                if ($booking->isApproved()) {
+                if (in_array($booking->status, ['Dikonfirmasi', 'Sedang test drive', 'Selesai', 'Perawatan'])) {
                     $approvalStatus = 'approved';
-                    $approvalLabel = 'Disetujui';
-                } elseif ($booking->isNotApproved()) {
+                    $approvalLabel  = 'Disetujui';
+                } elseif ($booking->status === 'Dibatalkan') {
                     $approvalStatus = 'not_approved';
-                    $approvalLabel = 'Dibatalkan';
+                    $approvalLabel  = 'Dibatalkan';
                 }
+                // 'Menunggu' dan 'Diproses' → tetap pending/Menunggu
 
                 return [
                     'id' => $booking->id,
@@ -42,9 +45,10 @@ class CheckSheetController extends Controller
                     'phone' => $booking->nomor_telepon,
                     'car' => $booking->mobil_test_drive,
                     'date' => \Carbon\Carbon::parse($booking->tanggal_booking)->format('d F Y'),
+                    'date_raw' => \Carbon\Carbon::parse($booking->tanggal_booking)->format('Y-m-d'),
                     'spv' => $booking->supervisor?->name ?? '-',
-                    'security' => '-',
                     'status' => $booking->status,
+                    'status_mobil' => $booking->status, // selalu gunakan booking->status (checksheet->status_mobil bisa stale)
                     'approval_status' => $approvalStatus,
                     'approval_label' => $approvalLabel,
                     'is_approved' => $booking->isApproved(),
@@ -105,8 +109,8 @@ class CheckSheetController extends Controller
 
             $data = $request->all();
             $data['user_id'] = Auth::id();
-            $data['status'] = 'pending';
             $data['nama_customer'] = $booking->nama_lengkap;
+            $data['status_mobil'] = $booking->status; // sync status mobil dari booking
 
             $checkboxFields = $this->getAllCheckboxFields();
             foreach ($checkboxFields as $field) {
@@ -284,6 +288,7 @@ class CheckSheetController extends Controller
                         'filled_by_email' => $checksheet->user->email ?? '-',
                         'security' => '-',
                         'spv' => $checksheet->booking->supervisor?->name ?? '-',
+                        'status_mobil' => $checksheet->status_mobil ?? '-',
                         'status' => $booking->isApproved() ? 'approved' : ($booking->isPending() ? 'pending' : 'not_approved'),
                         'status_label' => $booking->isApproved() ? 'Disetujui' : ($booking->isPending() ? 'Menunggu' : 'Dibatalkan'),
 
@@ -323,7 +328,7 @@ class CheckSheetController extends Controller
     public function exportSingle($checksheetId)
     {
         try {
-            $checksheet = Checksheet::with(['booking.supervisor', 'booking.security', 'user'])
+            $checksheet = Checksheet::with(['booking.supervisor', 'user'])
                 ->findOrFail($checksheetId);
 
             $spreadsheet = new Spreadsheet();
@@ -502,7 +507,7 @@ class CheckSheetController extends Controller
     public function exportAll()
     {
         try {
-            $checksheets = Checksheet::with(['booking.supervisor', 'booking.security', 'user'])->latest()->get();
+            $checksheets = Checksheet::with(['booking.supervisor', 'user'])->latest()->get();
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
@@ -514,7 +519,7 @@ class CheckSheetController extends Controller
             }
 
             $row = 2;
-            foreach ($checksheets as $i => $cs) {
+            foreach ($checksheets as $i => /** @var Checksheet $cs */ $cs) {
                 $sheet->setCellValue('A' . $row, $i + 1);
                 $sheet->setCellValue('B' . $row, \Carbon\Carbon::parse($cs->tanggal_test_drive)->format('d/m/Y'));
                 $sheet->setCellValue('C' . $row, $cs->booking->nama_lengkap ?? '-');
@@ -524,7 +529,7 @@ class CheckSheetController extends Controller
                 $sheet->setCellValue('G' . $row, $cs->jam_pinjam);
                 $sheet->setCellValue('H' . $row, $cs->jam_kembali);
                 $sheet->setCellValue('I' . $row, $cs->booking->supervisor?->name ?? '-');
-                $sheet->setCellValue('J' . $row, $cs->booking->security?->name ?? '-');
+                $sheet->setCellValue('J' . $row, '-');
                 $sheet->setCellValue('K' . $row, $cs->getStatusLabel());
                 $row++;
             }
@@ -793,6 +798,43 @@ class CheckSheetController extends Controller
                 'success' => false,
                 'message' => 'Gagal memuat summary checksheet',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    /**
+     * Update status_mobil di checksheet saat status mobil berubah dari halaman checksheet.
+     * Dipanggil bersamaan dengan /api/bookings/{id}/status
+     */
+    public function updateStatusMobil(Request $request, $bookingId)
+    {
+        try {
+            $validated = $request->validate([
+                'status_mobil' => 'required|in:Sedang test drive,Selesai,Perawatan',
+            ]);
+
+            $checksheet = Checksheet::where('booking_id', $bookingId)->first();
+
+            if (!$checksheet) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Checksheet tidak ditemukan untuk booking ini'
+                ], 404);
+            }
+
+            $checksheet->update(['status_mobil' => $validated['status_mobil']]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status mobil checksheet berhasil diperbarui',
+                'status_mobil' => $checksheet->status_mobil
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error updating checksheet status_mobil: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
     }
