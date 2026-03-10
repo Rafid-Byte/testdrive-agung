@@ -414,12 +414,21 @@
                                         <template
                                             x-for="i in (managementItemsPerPage - paginatedManagementBookings.length)"
                                             :key="'empty-' + i">
-                                            <tr class="h-20">
+                                            <tr class="h-20" x-show="managementBookingsByType.length > 0">
                                                 <td class="px-4 py-3" colspan="5">
                                                     <div class="h-full">&nbsp;</div>
                                                 </td>
                                             </tr>
                                         </template>
+                                        <tr x-show="managementBookingsByType.length === 0">
+                                            <td colspan="5" class="px-4 py-16 text-center">
+                                                <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                <p class="text-gray-500 dark:text-gray-400 text-lg">Belum ada booking</p>
+                                                <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Booking test drive akan muncul di sini</p>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -781,12 +790,21 @@
                                         <template
                                             x-for="i in (managementItemsPerPage - paginatedManagementBookings.length)"
                                             :key="'empty-' + i">
-                                            <tr class="h-20">
+                                            <tr class="h-20" x-show="managementBookingsByType.length > 0">
                                                 <td class="px-4 py-3" colspan="6">
                                                     <div class="h-full">&nbsp;</div>
                                                 </td>
                                             </tr>
                                         </template>
+                                        <tr x-show="managementBookingsByType.length === 0">
+                                            <td colspan="6" class="px-4 py-16 text-center">
+                                                <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                <p class="text-gray-500 dark:text-gray-400 text-lg">Belum ada booking</p>
+                                                <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Booking pameran/movex akan muncul di sini</p>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -943,18 +961,5 @@
                                 </svg>
                                 <p class="text-gray-500 dark:text-gray-400 text-lg">Tidak ditemukan booking</p>
                                 <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Coba kata kunci lain</p>
-                            </div>
-
-                            <div x-show="managementBookingsByType.length === 0" class="text-center py-12">
-                                <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                    </path>
-                                </svg>
-                                <p class="text-gray-500 dark:text-gray-400 text-lg">Belum ada booking</p>
-                                <p class="text-gray-400 dark:text-gray-500 text-sm mt-1"
-                                    x-text="'Booking ' + (managementViewType === 'test_drive' ? 'test drive' : 'pameran/movex') + ' akan muncul di sini'">
-                                </p>
                             </div>
                         </div>

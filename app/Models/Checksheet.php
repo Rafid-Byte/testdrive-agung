@@ -79,14 +79,6 @@ class Checksheet extends Model
         'bahan_bakar_pinjam_kembali_2',
         'bahan_bakar_pinjam_kembali_3',
         'bahan_bakar_pinjam_kembali_4',
-        'bahan_bakar_kembali_1',
-        'bahan_bakar_kembali_2',
-        'bahan_bakar_kembali_3',
-        'bahan_bakar_kembali_4',
-        'bahan_bakar_kembali_kembali_1',
-        'bahan_bakar_kembali_kembali_2',
-        'bahan_bakar_kembali_kembali_3',
-        'bahan_bakar_kembali_kembali_4',
         
         'stnk_pinjam_ada',
         'stnk_pinjam_tidak_ada',
@@ -156,14 +148,6 @@ class Checksheet extends Model
         'bahan_bakar_pinjam_kembali_2' => 'boolean',
         'bahan_bakar_pinjam_kembali_3' => 'boolean',
         'bahan_bakar_pinjam_kembali_4' => 'boolean',
-        'bahan_bakar_kembali_1' => 'boolean',
-        'bahan_bakar_kembali_2' => 'boolean',
-        'bahan_bakar_kembali_3' => 'boolean',
-        'bahan_bakar_kembali_4' => 'boolean',
-        'bahan_bakar_kembali_kembali_1' => 'boolean',
-        'bahan_bakar_kembali_kembali_2' => 'boolean',
-        'bahan_bakar_kembali_kembali_3' => 'boolean',
-        'bahan_bakar_kembali_kembali_4' => 'boolean',
         
         'stnk_pinjam_ada' => 'boolean',
         'stnk_pinjam_tidak_ada' => 'boolean',
@@ -216,10 +200,10 @@ class Checksheet extends Model
 
     public function getFuelLevelKembaliAttribute()
     {
-        if ($this->bahan_bakar_kembali_1) return '1 Kotak';
-        if ($this->bahan_bakar_kembali_2) return '2 Kotak';
-        if ($this->bahan_bakar_kembali_3) return '3 Kotak';
-        if ($this->bahan_bakar_kembali_4) return 'Di Atas 4 Kotak';
+        if ($this->bahan_bakar_pinjam_kembali_1) return '1 Kotak';
+        if ($this->bahan_bakar_pinjam_kembali_2) return '2 Kotak';
+        if ($this->bahan_bakar_pinjam_kembali_3) return '3 Kotak';
+        if ($this->bahan_bakar_pinjam_kembali_4) return 'Di Atas 4 Kotak';
         return 'Tidak Diisi';
     }
 
