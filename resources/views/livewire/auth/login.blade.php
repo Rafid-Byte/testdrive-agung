@@ -25,7 +25,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $this->validate();
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages(['email' => __('auth.failed')]);
         }
@@ -37,7 +37,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     protected function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -54,7 +54,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+        return Str::transliterate(Str::lower($this->email) . '|' . request()->ip());
     }
 }; ?>
 
@@ -62,9 +62,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <!-- Brand Header -->
     <div class="mb-8">
         <div class="flex items-center gap-3 mb-8">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+            <div
+                class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-md">
                 <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd"
+                        d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z"
+                        clip-rule="evenodd" />
                 </svg>
             </div>
             <div>
@@ -84,8 +87,9 @@ new #[Layout('components.layouts.auth')] class extends Component {
     </div>
 
     <!-- Session Status Alert -->
-    @if(session('status'))
-        <div class="mb-6 p-3.5 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800/30 rounded-lg">
+    @if (session('status'))
+        <div
+            class="mb-6 p-3.5 bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800/30 rounded-lg">
             <p class="text-sm text-emerald-800 dark:text-emerald-300 font-medium">{{ session('status') }}</p>
         </div>
     @endif
@@ -99,16 +103,8 @@ new #[Layout('components.layouts.auth')] class extends Component {
                     <label for="email" class="block text-sm font-medium text-zinc-900 dark:text-zinc-100">
                         {{ __('Email') }}
                     </label>
-                    <flux:input
-                        wire:model="email"
-                        id="email"
-                        type="email"
-                        required
-                        autofocus
-                        autocomplete="email"
-                        placeholder="name@company.com"
-                        class="h-11"
-                    />
+                    <flux:input wire:model="email" id="email" type="email" required autofocus autocomplete="email"
+                        placeholder="name@company.com" class="h-11" />
                 </div>
 
                 <!-- Password -->
@@ -118,26 +114,14 @@ new #[Layout('components.layouts.auth')] class extends Component {
                             {{ __('Password') }}
                         </label>
                     </div>
-                    <flux:input
-                        wire:model="password"
-                        id="password"
-                        type="password"
-                        required
-                        autocomplete="current-password"
-                        placeholder="Enter your password"
-                        viewable
-                        class="h-11"
-                    />
+                    <flux:input wire:model="password" id="password" type="password" required
+                        autocomplete="current-password" placeholder="Enter your password" viewable class="h-11" />
                 </div>
 
                 <!-- Submit Button -->
                 <div class="pt-1">
-                    <flux:button 
-                        variant="primary" 
-                        type="submit" 
-                        class="w-full h-11 font-medium" 
-                        data-test="login-button"
-                    >
+                    <flux:button variant="primary" type="submit" class="w-full h-11 font-medium"
+                        data-test="login-button">
                         {{ __('Sign in') }}
                     </flux:button>
                 </div>

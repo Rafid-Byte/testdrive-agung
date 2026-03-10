@@ -18,7 +18,7 @@ class PameranInfoController extends Controller
     public function getPameranBookings(Request $request)
     {
         try {
-            $query = PameranBooking::with(['supervisor']) // ✅ security & salesUser dihapus
+            $query = PameranBooking::with(['supervisor'])
                 ->whereIn('status', [
                     'Dikonfirmasi',
                     'Diproses',
@@ -67,9 +67,9 @@ class PameranInfoController extends Controller
                         'tanggal_selesai' => $booking->formatted_end_date,
                         'tanggal_acara' => $booking->formatted_event_date,
                         'lokasi_acara' => $booking->lokasi_acara,
-                        'supervisor_name' => $booking->supervisor_name, // ✅ pakai accessor (dari kolom langsung)
-                        'security_name'   => '-',                        // ✅ security dihapus
-                        'sales_name'      => $booking->supervisor_name,  // ✅ fallback ke supervisor
+                        'supervisor_name' => $booking->supervisor_name,
+                        'security_name'   => '-',
+                        'sales_name'      => $booking->supervisor_name,
                         'status' => $booking->status,
                         'created_at' => $booking->created_at->format('d M Y H:i'),
                     ];
@@ -93,7 +93,15 @@ class PameranInfoController extends Controller
             ]);
 
             $booking = PameranBooking::findOrFail($id);
-            
+
+            $currentUser = Auth::user();
+            if ($currentUser?->role === 'security' && $booking->status === 'Diproses') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Booking ini belum dikonfirmasi Branch Manager. Status belum dapat diubah.'
+                ], 403);
+            }
+
             $oldStatus = $booking->status;
             $booking->status = $request->status;
             $booking->save();
@@ -127,7 +135,7 @@ class PameranInfoController extends Controller
     public function show($id)
     {
         try {
-            $booking = PameranBooking::with(['supervisor']) // ✅ security & salesUser dihapus
+            $booking = PameranBooking::with(['supervisor'])
                 ->findOrFail($id);
 
             return response()->json([
@@ -144,9 +152,9 @@ class PameranInfoController extends Controller
                     'tanggal_selesai' => $booking->formatted_end_date,
                     'tanggal_acara' => $booking->formatted_event_date,
                     'lokasi_acara' => $booking->lokasi_acara,
-                    'supervisor_name' => $booking->supervisor_name, // ✅ pakai accessor
-                    'security_name'   => '-',                        // ✅ security dihapus
-                    'sales_name'      => $booking->supervisor_name,  // ✅ fallback ke supervisor
+                    'supervisor_name' => $booking->supervisor_name,
+                    'security_name'   => '-',
+                    'sales_name'      => $booking->supervisor_name,
                     'status' => $booking->status,
                 ]
             ]);

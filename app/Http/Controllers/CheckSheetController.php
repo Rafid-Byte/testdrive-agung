@@ -24,8 +24,7 @@ class CheckSheetController extends Controller
             ->orderBy('tanggal_booking', 'desc')
             ->get()
             ->map(function (TestDriveBooking $booking) {
-                // Status approval: hanya 'Disetujui' saat BM sudah konfirmasi (Dikonfirmasi ke atas)
-                // 'Menunggu' = Menunggu + Diproses (SPV approve, tapi BM belum konfirmasi)
+
                 $approvalStatus = 'pending';
                 $approvalLabel  = 'Menunggu';
 
@@ -36,7 +35,6 @@ class CheckSheetController extends Controller
                     $approvalStatus = 'not_approved';
                     $approvalLabel  = 'Dibatalkan';
                 }
-                // 'Menunggu' dan 'Diproses' → tetap pending/Menunggu
 
                 return [
                     'id' => $booking->id,
@@ -48,7 +46,7 @@ class CheckSheetController extends Controller
                     'date_raw' => \Carbon\Carbon::parse($booking->tanggal_booking)->format('Y-m-d'),
                     'spv' => $booking->supervisor?->name ?? '-',
                     'status' => $booking->status,
-                    'status_mobil' => $booking->status, // selalu gunakan booking->status (checksheet->status_mobil bisa stale)
+                    'status_mobil' => $booking->status,
                     'approval_status' => $approvalStatus,
                     'approval_label' => $approvalLabel,
                     'is_approved' => $booking->isApproved(),
@@ -110,7 +108,7 @@ class CheckSheetController extends Controller
             $data = $request->all();
             $data['user_id'] = Auth::id();
             $data['nama_customer'] = $booking->nama_lengkap;
-            $data['status_mobil'] = $booking->status; // sync status mobil dari booking
+            $data['status_mobil'] = $booking->status;
 
             $checkboxFields = $this->getAllCheckboxFields();
             foreach ($checkboxFields as $field) {
@@ -152,7 +150,7 @@ class CheckSheetController extends Controller
             }
 
             $canView = $this->userHasRole($currentUser, ['admin', 'spv', 'security']) ||
-                       $checksheet->user_id === $currentUser->id;
+                $checksheet->user_id === $currentUser->id;
 
             if (!$canView) {
                 Log::warning('Unauthorized checksheet access attempt:', [
@@ -519,7 +517,11 @@ class CheckSheetController extends Controller
             }
 
             $row = 2;
-            foreach ($checksheets as $i => /** @var Checksheet $cs */ $cs) {
+            foreach (
+                $checksheets as $i =>
+                /** @var Checksheet $cs */
+                $cs
+            ) {
                 $sheet->setCellValue('A' . $row, $i + 1);
                 $sheet->setCellValue('B' . $row, \Carbon\Carbon::parse($cs->tanggal_test_drive)->format('d/m/Y'));
                 $sheet->setCellValue('C' . $row, $cs->booking->nama_lengkap ?? '-');
@@ -794,11 +796,6 @@ class CheckSheetController extends Controller
         }
     }
 
-
-    /**
-     * Update status_mobil di checksheet saat status mobil berubah dari halaman checksheet.
-     * Dipanggil bersamaan dengan /api/bookings/{id}/status
-     */
     public function updateStatusMobil(Request $request, $bookingId)
     {
         try {
@@ -837,7 +834,7 @@ class CheckSheetController extends Controller
             $checksheet = Checksheet::findOrFail($id);
 
             $currentUser = Auth::user();
-            
+
             if (!$currentUser) {
                 return response()->json([
                     'success' => false,

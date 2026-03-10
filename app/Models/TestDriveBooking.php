@@ -19,7 +19,7 @@ class TestDriveBooking extends Model
         'tanggal_booking',
         'status',
         'supervisor_user_id',
-        'supervisor_user_name', // ✅ nama supervisor tersimpan langsung di tabel
+        'supervisor_user_name',
         'sales_name',
         'sales_phone',
         'test_drive_time',
@@ -45,8 +45,6 @@ class TestDriveBooking extends Model
         return \Carbon\Carbon::parse($this->tanggal_booking)->locale('id')->translatedFormat('d F Y');
     }
 
-    // ✅ Prioritaskan supervisor_user_name (tersimpan di DB),
-    //    fallback ke relasi jika kolom kosong (untuk data lama)
     public function getSupervisorNameAttribute()
     {
         return $this->supervisor_user_name
@@ -62,7 +60,11 @@ class TestDriveBooking extends Model
     public function isApproved(): bool
     {
         return in_array($this->status, [
-            'Dikonfirmasi', 'Diproses', 'Sedang test drive', 'Selesai', 'Perawatan'
+            'Dikonfirmasi',
+            'Diproses',
+            'Sedang test drive',
+            'Selesai',
+            'Perawatan'
         ]);
     }
 
@@ -95,7 +97,10 @@ class TestDriveBooking extends Model
     public function canAccessChecksheet(): bool
     {
         return in_array($this->status, [
-            'Dikonfirmasi', 'Sedang test drive', 'Selesai', 'Perawatan'
+            'Dikonfirmasi',
+            'Sedang test drive',
+            'Selesai',
+            'Perawatan'
         ]);
     }
 

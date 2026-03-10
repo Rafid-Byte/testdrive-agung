@@ -18,23 +18,34 @@ class BookingController extends Controller
         try {
             $user = Auth::user();
 
-            // Tidak perlu eager load supervisor untuk ambil nama —
-            // supervisor_user_name sudah tersimpan langsung di kolom
             $testDriveQuery = TestDriveBooking::query();
 
             if ($user->role === 'branch_manager') {
                 $testDriveQuery->whereIn('status', [
-                    'Diproses', 'Dikonfirmasi', 'Sedang test drive', 'Selesai', 'Perawatan', 'Dibatalkan'
+                    'Diproses',
+                    'Dikonfirmasi',
+                    'Sedang test drive',
+                    'Selesai',
+                    'Perawatan',
+                    'Dibatalkan'
                 ]);
             } elseif ($user->role === 'security') {
                 $testDriveQuery->whereIn('status', [
-                    'Dikonfirmasi', 'Sedang test drive', 'Selesai', 'Perawatan'
+                    'Dikonfirmasi',
+                    'Sedang test drive',
+                    'Selesai',
+                    'Perawatan'
                 ]);
             } elseif ($user->role === 'spv') {
                 $testDriveQuery->where('supervisor_user_id', $user->id)
                     ->whereIn('status', [
-                        'Menunggu', 'Diproses', 'Dikonfirmasi', 'Sedang test drive',
-                        'Selesai', 'Perawatan', 'Dibatalkan'
+                        'Menunggu',
+                        'Diproses',
+                        'Dikonfirmasi',
+                        'Sedang test drive',
+                        'Selesai',
+                        'Perawatan',
+                        'Dibatalkan'
                     ]);
             }
 
@@ -67,7 +78,7 @@ class BookingController extends Controller
                         'approval_status'     => $approvalStatus,
                         'approval_label'      => $approvalLabel,
                         'is_approved'         => ($approvalStatus === 'approved'),
-                        'spv'                 => $booking->supervisor_user_name ?? '-', // ✅ langsung dari kolom
+                        'spv'                 => $booking->supervisor_user_name ?? '-',
                         'security'            => '-',
                         'sales_name'          => $booking->sales_name,
                         'sales_phone'         => $booking->sales_phone,
@@ -77,19 +88,29 @@ class BookingController extends Controller
                     ];
                 });
 
-            $pameranQuery = PameranBooking::query(); // ✅ security & salesUser dihapus dari tabel
+            $pameranQuery = PameranBooking::query();
 
             if ($user->role === 'branch_manager') {
                 $pameranQuery->whereIn('status', [
-                    'Diproses', 'Dikonfirmasi', 'Sedang Pameran', 'Selesai', 'Perawatan', 'Dibatalkan'
+                    'Diproses',
+                    'Dikonfirmasi',
+                    'Sedang Pameran',
+                    'Selesai',
+                    'Perawatan',
+                    'Dibatalkan'
                 ]);
             } elseif ($user->role === 'security') {
                 $pameranQuery->whereIn('status', ['Dikonfirmasi', 'Sedang Pameran', 'Selesai', 'Perawatan']);
             } elseif ($user->role === 'spv') {
                 $pameranQuery->where('supervisor_user_id', $user->id)
                     ->whereIn('status', [
-                        'Menunggu', 'Diproses', 'Dikonfirmasi', 'Sedang Pameran',
-                        'Selesai', 'Perawatan', 'Dibatalkan'
+                        'Menunggu',
+                        'Diproses',
+                        'Dikonfirmasi',
+                        'Sedang Pameran',
+                        'Selesai',
+                        'Perawatan',
+                        'Dibatalkan'
                     ]);
             }
 
@@ -108,11 +129,11 @@ class BookingController extends Controller
                         'date'            => $booking->formatted_date,
                         'rawDate'         => $booking->tanggal_booking,
                         'status'          => $booking->status,
-                        'spv'             => $booking->supervisor_name, // ✅ pakai accessor (dari kolom langsung)
-                        'security'        => '-',                        // ✅ security dihapus
-                        'sales_spv_name'  => $booking->supervisor_name, // ✅ sama dengan spv
-                        'sales_name'      => $booking->supervisor_name, // ✅ sama dengan spv
-                        'sales_phone'     => '-',                        // ✅ sales_user_id dihapus
+                        'spv'             => $booking->supervisor_name,
+                        'security'        => '-',
+                        'sales_spv_name'  => $booking->supervisor_name,
+                        'sales_name'      => $booking->supervisor_name,
+                        'sales_phone'     => '-',
                         'event_date'      => $booking->formatted_event_date,
                         'event_location'  => $booking->lokasi_acara ?? '-',
                         'target_prospect' => $booking->target_prospect,
@@ -151,7 +172,6 @@ class BookingController extends Controller
     public function getCustomerData()
     {
         try {
-            // Tidak perlu with(['supervisor']) — nama sudah ada di supervisor_user_name
             $bookings = TestDriveBooking::orderBy('created_at', 'desc')->get();
 
             $customerData = [];
@@ -166,7 +186,7 @@ class BookingController extends Controller
                         'email'             => $booking->email,
                         'ktp'               => $booking->no_ktp,
                         'address'           => $booking->test_drive_location ?? '-',
-                        'assignedSPV'       => $booking->supervisor_user_name ?? '-', // ✅ langsung dari kolom
+                        'assignedSPV'       => $booking->supervisor_user_name ?? '-',
                         'assignedSecurity'  => '-',
                         'totalBookings'     => 0,
                         'lastCar'           => null,
@@ -184,7 +204,6 @@ class BookingController extends Controller
                 ];
             }
 
-            // Bulk-load checksheet
             $emails = array_column(array_values($customerData), 'email');
 
             $allChecksheets = Checksheet::with('booking')
@@ -245,8 +264,6 @@ class BookingController extends Controller
         }
     }
 
-    // ─── Helper methods ────────────────────────────────────────────────────────
-
     private function getIssues($checksheet, string $stage): array
     {
         $fields = ['body_luar', 'ban_velg', 'kaca_spion', 'interior', 'kebersihan_interior', 'peralatan', 'ac_audio', 'lampu'];
@@ -296,8 +313,6 @@ class BookingController extends Controller
         return $issues;
     }
 
-    // ─── End helper methods ────────────────────────────────────────────────────
-
     public function storeManual(Request $request)
     {
         try {
@@ -316,7 +331,6 @@ class BookingController extends Controller
                 'test_drive_location' => 'nullable|string|max:255',
             ]);
 
-            // ✅ Ambil nama supervisor dan simpan ke supervisor_user_name
             $supervisor = User::find($validated['supervisor_user_id']);
             $validated['supervisor_user_name'] = $supervisor?->name;
             $validated['status'] = 'Menunggu';
@@ -374,7 +388,7 @@ class BookingController extends Controller
                 'tanggal_booking'      => now()->toDateString(),
                 'status'               => 'Menunggu',
                 'supervisor_user_id'   => $selectedSPV->id,
-                'supervisor_user_name' => $selectedSPV->name, // ✅ nama SPV tersimpan langsung
+                'supervisor_user_name' => $selectedSPV->name,
                 'sales_name'           => $validated['sales_name'],
                 'sales_phone'          => $validated['sales_phone'],
                 'test_drive_time'      => $validated['test_drive_time'],
@@ -429,9 +443,8 @@ class BookingController extends Controller
                 'tanggal_selesai'      => $validated['end_date'],
                 'status'               => 'Menunggu',
                 'supervisor_user_id'   => $selectedSPV->id,
-                'supervisor_user_name' => $selectedSPV->name, // ✅ simpan nama langsung
+                'supervisor_user_name' => $selectedSPV->name,
                 'booking_type'         => 'pameran'
-                // ✅ security_user_id & sales_user_id dihapus
             ]);
 
             return response()->json([
@@ -511,7 +524,6 @@ class BookingController extends Controller
                 if (!in_array($booking->status, ['Dikonfirmasi', $validInProgress, 'Selesai', 'Perawatan']))
                     return response()->json(['success' => false, 'message' => 'Booking belum dikonfirmasi.'], 403);
                 $booking->update(['status' => $validated['status']]);
-                // Sync checksheet status_mobil jika ada checksheet terkait
                 if ($validated['booking_type'] === 'test_drive') {
                     $checksheet = Checksheet::where('booking_id', $booking->id)->first();
                     if ($checksheet && in_array($validated['status'], ['Sedang test drive', 'Selesai', 'Perawatan'])) {
@@ -523,7 +535,6 @@ class BookingController extends Controller
 
             if ($user->role === 'admin') {
                 $booking->update(['status' => $validated['status']]);
-                // Sync checksheet status_mobil jika ada checksheet terkait
                 if ($validated['booking_type'] === 'test_drive') {
                     $checksheet = Checksheet::where('booking_id', $booking->id)->first();
                     if ($checksheet && in_array($validated['status'], ['Sedang test drive', 'Selesai', 'Perawatan'])) {
@@ -567,7 +578,7 @@ class BookingController extends Controller
             if (!empty($validated['supervisor_user_id'])) {
                 $supervisor = User::find($validated['supervisor_user_id']);
                 $updateData['supervisor_user_id']   = $validated['supervisor_user_id'];
-                $updateData['supervisor_user_name'] = $supervisor?->name; // ✅ update nama sekaligus
+                $updateData['supervisor_user_name'] = $supervisor?->name;
             }
 
             $updated = TestDriveBooking::where('email', $validated['original_email'])->update($updateData);
@@ -638,8 +649,12 @@ class BookingController extends Controller
     {
         try {
             $vehicles = [
-                'Toyota Hilux Rangga', 'Toyota Raize Abu Abu', 'Toyota Zenix',
-                'Toyota Agya Putih', 'Toyota Fortuner', 'Toyota Agya GR Merah',
+                'Toyota Hilux Rangga',
+                'Toyota Raize Abu Abu',
+                'Toyota Zenix',
+                'Toyota Agya Putih',
+                'Toyota Fortuner',
+                'Toyota Agya GR Merah',
             ];
 
             $testDriveBookings = TestDriveBooking::whereIn('mobil_test_drive', $vehicles)
@@ -661,10 +676,13 @@ class BookingController extends Controller
 
                 if ($activeBooking) {
                     switch ($activeBooking->status) {
-                        case 'Menunggu': case 'Diproses': case 'Dikonfirmasi':
+                        case 'Menunggu':
+                        case 'Diproses':
+                        case 'Dikonfirmasi':
                             $vehicleStatus[$vehicle] = ['available' => false, 'status' => $bookingType === 'pameran' ? 'Dibooking untuk Pameran/Movex' : 'Dibooking untuk Test Drive', 'status_code' => 'booked', 'booking_type' => $bookingType, 'booking_id' => $activeBooking->id, 'booking_status' => $activeBooking->status];
                             break;
-                        case 'Sedang test drive': case 'Sedang Pameran':
+                        case 'Sedang test drive':
+                        case 'Sedang Pameran':
                             $vehicleStatus[$vehicle] = ['available' => false, 'status' => 'Mobil Tidak Tersedia', 'status_code' => 'in_use', 'booking_type' => $bookingType, 'booking_id' => $activeBooking->id, 'booking_status' => $activeBooking->status];
                             break;
                         case 'Perawatan':
@@ -700,11 +718,9 @@ class BookingController extends Controller
                 'tanggal_mulai'      => 'sometimes|date',
                 'tanggal_selesai'    => 'sometimes|date|after_or_equal:tanggal_mulai',
                 'supervisor_user_id' => 'sometimes|exists:users,id',
-                // ✅ security_user_id DIHAPUS dari validasi
                 'status'             => 'sometimes|in:Menunggu,Diproses,Dikonfirmasi,Sedang Pameran,Selesai,Perawatan,Dibatalkan'
             ]);
 
-            // ✅ Jika supervisor diubah, update nama supervisor sekaligus
             if (!empty($validated['supervisor_user_id'])) {
                 $supervisor = User::find($validated['supervisor_user_id']);
                 $validated['supervisor_user_name'] = $supervisor?->name;

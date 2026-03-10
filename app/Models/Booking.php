@@ -72,7 +72,7 @@ class Booking extends Model
 
         foreach ($bookings as $booking) {
             $name = $booking->customer_name;
-            
+
             if (!isset($customerData[$name])) {
                 $customerData[$name] = [
                     'name' => $name,

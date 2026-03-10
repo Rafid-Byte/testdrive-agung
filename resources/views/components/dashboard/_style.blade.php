@@ -1,5 +1,5 @@
 <style>
-                        [x-cloak] {
-                            display: none !important;
-                        }
-                    </style>
+    [x-cloak] {
+        display: none !important;
+    }
+</style>

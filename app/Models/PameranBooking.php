@@ -22,10 +22,8 @@ class PameranBooking extends Model
         'tanggal_acara',
         'lokasi_acara',
         'supervisor_user_id',
-        'supervisor_user_name', // ✅ BARU: nama supervisor tersimpan langsung
+        'supervisor_user_name',
         'status'
-        // ✅ security_user_id DIHAPUS
-        // ✅ sales_user_id DIHAPUS
     ];
 
     protected $casts = [
@@ -35,13 +33,10 @@ class PameranBooking extends Model
         'tanggal_acara'   => 'date',
     ];
 
-    // ✅ Hanya supervisor yang masih relevan
     public function supervisor()
     {
         return $this->belongsTo(User::class, 'supervisor_user_id')->where('role', 'spv');
     }
-
-    // ✅ security() dan salesUser() DIHAPUS — kolom sudah tidak ada di tabel
 
     public function getFormattedDateAttribute()
     {
@@ -51,26 +46,24 @@ class PameranBooking extends Model
     public function getFormattedEventDateAttribute()
     {
         return $this->tanggal_acara ?
-               \Carbon\Carbon::parse($this->tanggal_acara)->locale('id')->translatedFormat('d F Y') :
-               '-';
+            \Carbon\Carbon::parse($this->tanggal_acara)->locale('id')->translatedFormat('d F Y') :
+            '-';
     }
 
     public function getFormattedStartDateAttribute()
     {
         return $this->tanggal_mulai ?
-               \Carbon\Carbon::parse($this->tanggal_mulai)->locale('id')->translatedFormat('d F Y') :
-               '-';
+            \Carbon\Carbon::parse($this->tanggal_mulai)->locale('id')->translatedFormat('d F Y') :
+            '-';
     }
 
     public function getFormattedEndDateAttribute()
     {
         return $this->tanggal_selesai ?
-               \Carbon\Carbon::parse($this->tanggal_selesai)->locale('id')->translatedFormat('d F Y') :
-               '-';
+            \Carbon\Carbon::parse($this->tanggal_selesai)->locale('id')->translatedFormat('d F Y') :
+            '-';
     }
 
-    // ✅ Prioritaskan supervisor_user_name (kolom langsung),
-    //    fallback ke relasi untuk data lama yang belum ter-migrate
     public function getSupervisorNameAttribute()
     {
         return $this->supervisor_user_name

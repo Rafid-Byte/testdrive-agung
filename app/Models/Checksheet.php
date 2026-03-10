@@ -13,14 +13,14 @@ class Checksheet extends Model
 
     protected $fillable = [
         'user_id',
-        'booking_id', 
+        'booking_id',
         'nama_customer',
         'tanggal_test_drive',
         'jam_pinjam',
         'jam_kembali',
         'tipe_mobil',
         'no_polisi',
-        
+
         'body_luar_pinjam_baik',
         'body_luar_pinjam_tidak_baik',
         'body_luar_pinjam_catatan',
@@ -45,7 +45,7 @@ class Checksheet extends Model
         'lampu_pinjam_baik',
         'lampu_pinjam_tidak_baik',
         'lampu_pinjam_catatan',
-        
+
         'body_luar_kembali_baik',
         'body_luar_kembali_tidak_baik',
         'body_luar_kembali_catatan',
@@ -70,7 +70,7 @@ class Checksheet extends Model
         'lampu_kembali_baik',
         'lampu_kembali_tidak_baik',
         'lampu_kembali_catatan',
-        
+
         'bahan_bakar_pinjam_1',
         'bahan_bakar_pinjam_2',
         'bahan_bakar_pinjam_3',
@@ -79,7 +79,7 @@ class Checksheet extends Model
         'bahan_bakar_pinjam_kembali_2',
         'bahan_bakar_pinjam_kembali_3',
         'bahan_bakar_pinjam_kembali_4',
-        
+
         'stnk_pinjam_ada',
         'stnk_pinjam_tidak_ada',
         'kunci_utama_pinjam_ada',
@@ -92,12 +92,12 @@ class Checksheet extends Model
         'kunci_utama_kembali_tidak_ada',
         'remote_keyless_kembali_ada',
         'remote_keyless_kembali_tidak_ada',
-        
+
         'air_mineral_pinjam_ada',
         'air_mineral_pinjam_tidak_ada',
         'air_mineral_kembali_ada',
         'air_mineral_kembali_tidak_ada',
-        
+
         'tanggal_penggantian_pewangi',
         'status_mobil',
     ];
@@ -105,7 +105,7 @@ class Checksheet extends Model
     protected $casts = [
         'tanggal_test_drive' => 'date',
         'tanggal_penggantian_pewangi' => 'date',
-        
+
         'body_luar_pinjam_baik' => 'boolean',
         'body_luar_pinjam_tidak_baik' => 'boolean',
         'ban_velg_pinjam_baik' => 'boolean',
@@ -122,7 +122,7 @@ class Checksheet extends Model
         'ac_audio_pinjam_tidak_baik' => 'boolean',
         'lampu_pinjam_baik' => 'boolean',
         'lampu_pinjam_tidak_baik' => 'boolean',
-        
+
         'body_luar_kembali_baik' => 'boolean',
         'body_luar_kembali_tidak_baik' => 'boolean',
         'ban_velg_kembali_baik' => 'boolean',
@@ -139,7 +139,7 @@ class Checksheet extends Model
         'ac_audio_kembali_tidak_baik' => 'boolean',
         'lampu_kembali_baik' => 'boolean',
         'lampu_kembali_tidak_baik' => 'boolean',
-        
+
         'bahan_bakar_pinjam_1' => 'boolean',
         'bahan_bakar_pinjam_2' => 'boolean',
         'bahan_bakar_pinjam_3' => 'boolean',
@@ -148,7 +148,7 @@ class Checksheet extends Model
         'bahan_bakar_pinjam_kembali_2' => 'boolean',
         'bahan_bakar_pinjam_kembali_3' => 'boolean',
         'bahan_bakar_pinjam_kembali_4' => 'boolean',
-        
+
         'stnk_pinjam_ada' => 'boolean',
         'stnk_pinjam_tidak_ada' => 'boolean',
         'kunci_utama_pinjam_ada' => 'boolean',
@@ -161,7 +161,7 @@ class Checksheet extends Model
         'kunci_utama_kembali_tidak_ada' => 'boolean',
         'remote_keyless_kembali_ada' => 'boolean',
         'remote_keyless_kembali_tidak_ada' => 'boolean',
-        
+
         'air_mineral_pinjam_ada' => 'boolean',
         'air_mineral_pinjam_tidak_ada' => 'boolean',
         'air_mineral_kembali_ada' => 'boolean',
@@ -210,25 +210,24 @@ class Checksheet extends Model
     public function hasKerusakanPinjam()
     {
         return $this->body_luar_pinjam_tidak_baik ||
-               $this->ban_velg_pinjam_tidak_baik ||
-               $this->kaca_spion_pinjam_tidak_baik ||
-               $this->interior_pinjam_tidak_baik ||
-               $this->kebersihan_interior_pinjam_tidak_baik ||
-               $this->peralatan_pinjam_tidak_baik ||
-               $this->ac_audio_pinjam_tidak_baik ||
-               $this->lampu_pinjam_tidak_baik;
+            $this->ban_velg_pinjam_tidak_baik ||
+            $this->kaca_spion_pinjam_tidak_baik ||
+            $this->interior_pinjam_tidak_baik ||
+            $this->kebersihan_interior_pinjam_tidak_baik ||
+            $this->peralatan_pinjam_tidak_baik ||
+            $this->ac_audio_pinjam_tidak_baik ||
+            $this->lampu_pinjam_tidak_baik;
     }
 
     public function hasKerusakanKembali()
     {
         return $this->body_luar_kembali_tidak_baik ||
-               $this->ban_velg_kembali_tidak_baik ||
-               $this->kaca_spion_kembali_tidak_baik ||
-               $this->interior_kembali_tidak_baik ||
-               $this->kebersihan_interior_kembali_tidak_baik ||
-               $this->peralatan_kembali_tidak_baik ||
-               $this->ac_audio_kembali_tidak_baik ||
-               $this->lampu_kembali_tidak_baik;
+            $this->ban_velg_kembali_tidak_baik ||
+            $this->kaca_spion_kembali_tidak_baik ||
+            $this->interior_kembali_tidak_baik ||
+            $this->kebersihan_interior_kembali_tidak_baik ||
+            $this->peralatan_kembali_tidak_baik ||
+            $this->ac_audio_kembali_tidak_baik ||
+            $this->lampu_kembali_tidak_baik;
     }
-
 }
