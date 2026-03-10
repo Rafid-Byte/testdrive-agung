@@ -117,6 +117,81 @@
             </div>
         </div>
 
+
+        {{-- FILTER BAR --}}
+        <div x-show="picSort || carFilter || dateSort || dateFilter"
+            class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-semibold text-blue-700 dark:text-blue-300">Filter Aktif:</span>
+
+                <template x-if="picSort">
+                    <span
+                        class="inline-flex items-center gap-1 px-2 py-1 bg-purple-600 text-white text-xs font-medium rounded-full">
+                        Sort PIC: <span x-text="picSort === 'asc' ? 'A → Z' : 'Z → A'"></span>
+                        <button @click.prevent="clearPicSort()"
+                            class="ml-1 hover:bg-purple-700 rounded-full p-0.5 transition"><svg class="w-3 h-3"
+                                fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg></button>
+                    </span>
+                </template>
+
+                <template x-if="carFilter">
+                    <span
+                        class="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
+                        Mobil: <span x-text="carFilter"></span>
+                        <button @click.prevent="filterByCar('')"
+                            class="ml-1 hover:bg-blue-700 rounded-full p-0.5 transition"><svg class="w-3 h-3"
+                                fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg></button>
+                    </span>
+                </template>
+
+                <template x-if="dateSort">
+                    <span
+                        class="inline-flex items-center gap-1 px-2 py-1 bg-indigo-600 text-white text-xs font-medium rounded-full">
+                        Sort Tanggal: <span x-text="dateSort === 'asc' ? 'Terlama' : 'Terbaru'"></span>
+                        <button @click.prevent="clearDateFilter()"
+                            class="ml-1 hover:bg-indigo-700 rounded-full p-0.5 transition"><svg class="w-3 h-3"
+                                fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg></button>
+                    </span>
+                </template>
+
+                <template x-if="dateFilter">
+                    <span
+                        class="inline-flex items-center gap-1 px-2 py-1 bg-green-600 text-white text-xs font-medium rounded-full">
+                        Tanggal: <span x-text="dateFilter"></span>
+                        <button @click.prevent="clearDateFilter()"
+                            class="ml-1 hover:bg-green-700 rounded-full p-0.5 transition"><svg class="w-3 h-3"
+                                fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg></button>
+                    </span>
+                </template>
+
+                <button type="button" @click.prevent="clearAllFilters()"
+                    class="ml-auto px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-1 shadow-sm">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Clear All
+                </button>
+            </div>
+        </div>
+
         <div
             class="hidden lg:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -130,15 +205,132 @@
                         <tr>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                PIC
+                                <div class="flex items-center justify-between">
+                                    <span>PIC</span>
+                                    <div class="relative" x-data="{ open: false }">
+                                        <button @click="open = !open"
+                                            class="ml-2 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"><svg
+                                                class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+                                            </svg></button>
+                                        <div x-show="open" @click.away="open = false" x-transition
+                                            class="absolute left-0 top-full mt-2 w-44 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 z-[300]"
+                                            style="display:none;">
+                                            <button @click="sortPic('asc'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100">A
+                                                - Z</button>
+                                            <button @click="sortPic('desc'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100">Z
+                                                - A</button>
+                                            <button @click="clearPicSort(); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400">Clear
+                                                Sort</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Mobil
+                                <div class="flex items-center justify-between">
+                                    <span>Mobil</span>
+                                    <div class="relative" x-data="{ open: false }">
+                                        <button @click="open = !open"
+                                            class="ml-2 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"><svg
+                                                class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h6a1 1 0 001-1v-6a1 1 0 00-1-1h-6z" />
+                                            </svg></button>
+                                        <div x-show="open" @click.away="open = false" x-transition
+                                            class="absolute left-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 z-[300] max-h-64 overflow-y-auto"
+                                            style="display:none;">
+                                            <button @click="filterByCar(''); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold"
+                                                :class="carFilter === '' ?
+                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                    'text-gray-900 dark:text-gray-100'">Semua
+                                                Mobil</button>
+                                            <button @click="filterByCar('Toyota Hilux Rangga'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                :class="carFilter === 'Toyota Hilux Rangga' ?
+                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                    'text-gray-900 dark:text-gray-100'">Toyota
+                                                Hilux Rangga</button>
+                                            <button @click="filterByCar('Toyota Raize Abu Abu'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                :class="carFilter === 'Toyota Raize Abu Abu' ?
+                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                    'text-gray-900 dark:text-gray-100'">Toyota
+                                                Raize Abu Abu</button>
+                                            <button @click="filterByCar('Toyota Zenix'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                :class="carFilter === 'Toyota Zenix' ?
+                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                    'text-gray-900 dark:text-gray-100'">Toyota
+                                                Zenix</button>
+                                            <button @click="filterByCar('Toyota Agya Putih'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                :class="carFilter === 'Toyota Agya Putih' ?
+                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                    'text-gray-900 dark:text-gray-100'">Toyota
+                                                Agya Putih</button>
+                                            <button @click="filterByCar('Toyota Fortuner'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                :class="carFilter === 'Toyota Fortuner' ?
+                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                    'text-gray-900 dark:text-gray-100'">Toyota
+                                                Fortuner</button>
+                                            <button @click="filterByCar('Toyota Agya GR Merah'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                :class="carFilter === 'Toyota Agya GR Merah' ?
+                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                    'text-gray-900 dark:text-gray-100'">Toyota
+                                                Agya GR Merah</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Tanggal Acara
+                                <div class="flex items-center justify-between">
+                                    <span>Tanggal Acara</span>
+                                    <div class="relative" x-data="{ open: false }">
+                                        <button @click="open = !open"
+                                            class="ml-2 p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"><svg
+                                                class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg></button>
+                                        <div x-show="open" @click.away="open = false" x-transition
+                                            class="absolute left-0 top-full mt-2 w-52 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 z-[300]"
+                                            style="display:none;">
+                                            <button @click="setDateSort('desc'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                :class="dateSort === 'desc' ?
+                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                    'text-gray-900 dark:text-gray-100'">Terbaru</button>
+                                            <button @click="setDateSort('asc'); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                                :class="dateSort === 'asc' ?
+                                                    'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' :
+                                                    'text-gray-900 dark:text-gray-100'">Terlama</button>
+                                            <div class="px-4 py-2 border-t border-gray-200 dark:border-gray-600">
+                                                <label
+                                                    class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Pilih
+                                                    Tanggal</label>
+                                                <input type="date"
+                                                    @change="setDateFilter($event.target.value); open = false"
+                                                    class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                                            </div>
+                                            <button @click="clearDateFilter(); open = false"
+                                                class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400">Clear
+                                                Sort</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </th>
                             <th
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -193,22 +385,13 @@
                             </tr>
                         </template>
 
-                        <template x-for="(booking, index) in bookings" :key="'booking-' + booking.id">
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <template x-for="(booking, index) in paginatedBookings" :key="'booking-' + booking.id">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors h-16">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div
-                                            class="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-semibold">
-                                            <span
-                                                x-text="booking.nama_pic ? booking.nama_pic.substring(0, 2).toUpperCase() : 'NA'"></span>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white"
-                                                x-text="booking.nama_pic || '-'"></div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400"
-                                                x-text="booking.nomor_telepon || '-'"></div>
-                                        </div>
-                                    </div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white"
+                                        x-text="booking.nama_pic || '-'"></div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400"
+                                        x-text="booking.nomor_telepon || '-'"></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900 dark:text-white"
@@ -279,9 +462,17 @@
                                 </td>
                             </tr>
                         </template>
+                        <template x-for="i in (itemsPerPage - paginatedBookings.length)" :key="'filler-' + i">
+                            <tr class="h-16">
+                                <td colspan="6" class="px-6 py-3">
+                                    <div class="h-full">&nbsp;</div>
+                                </td>
+                            </tr>
+                        </template>
                     </tbody>
                 </table>
             </div>
+            @include('components.pameraninfo._pagination')
         </div>
 
         <div class="lg:hidden space-y-3">
@@ -319,22 +510,15 @@
                 </div>
             </template>
 
-            <template x-for="(booking, index) in bookings" :key="'mobile-booking-' + booking.id">
+            <template x-for="(booking, index) in paginatedBookings" :key="'mobile-booking-' + booking.id">
                 <div
                     class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                     <div class="flex items-start justify-between mb-3">
-                        <div class="flex items-center flex-1">
-                            <div
-                                class="flex-shrink-0 h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                                <span
-                                    x-text="booking.nama_pic ? booking.nama_pic.substring(0, 2).toUpperCase() : 'NA'"></span>
-                            </div>
-                            <div class="ml-3 flex-1 min-w-0">
-                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white truncate"
-                                    x-text="booking.nama_pic || '-'"></h4>
-                                <p class="text-xs text-gray-500 dark:text-gray-400"
-                                    x-text="booking.nomor_telepon || '-'"></p>
-                            </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white truncate"
+                                x-text="booking.nama_pic || '-'"></h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400" x-text="booking.nomor_telepon || '-'">
+                            </p>
                         </div>
                         <span class="px-2.5 py-1 text-xs font-semibold rounded-full ml-2 flex-shrink-0"
                             x-bind:class="{
@@ -404,6 +588,8 @@
                     </div>
                 </div>
             </template>
+
+            @include('components.pameraninfo._pagination')
         </div>
     </div>
 </div>

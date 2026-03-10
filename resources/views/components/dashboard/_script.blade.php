@@ -169,51 +169,15 @@
             },
 
             async init() {
-                // Baca dari 'theme' (appearance page) atau fallback ke 'darkMode' lama
-                const savedThemeKey = localStorage.getItem('theme');
-                if (savedThemeKey) {
-                    if (savedThemeKey === 'system') {
-                        this.darkMode = window.matchMedia('(prefers-color-scheme: dark)')
-                            .matches;
-                    } else {
-                        this.darkMode = savedThemeKey === 'dark';
-                    }
+                const savedTheme = localStorage.getItem('darkMode');
+                if (savedTheme !== null) {
+                    this.darkMode = savedTheme === 'true';
                 } else {
-                    const savedDarkMode = localStorage.getItem('darkMode');
-                    if (savedDarkMode !== null) {
-                        this.darkMode = savedDarkMode === 'true';
-                    } else {
-                        this.darkMode = window.matchMedia && window.matchMedia(
-                            '(prefers-color-scheme: dark)').matches;
-                    }
+                    this.darkMode = window.matchMedia && window.matchMedia(
+                        '(prefers-color-scheme: dark)').matches;
                 }
 
                 this.applyTheme();
-
-                // Dengarkan perubahan dari appearance page atau tab lain
-                window.addEventListener('storage', (e) => {
-                    if (e.key === 'theme') {
-                        if (e.newValue === 'system') {
-                            this.darkMode = window.matchMedia(
-                                '(prefers-color-scheme: dark)').matches;
-                        } else if (e.newValue) {
-                            this.darkMode = e.newValue === 'dark';
-                        }
-                        this.applyTheme();
-                    } else if (e.key === 'darkMode') {
-                        this.darkMode = e.newValue === 'true';
-                        this.applyTheme();
-                    }
-                });
-
-                // System theme: ikuti perubahan OS
-                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (
-                    e) => {
-                        if (localStorage.getItem('theme') === 'system') {
-                            this.darkMode = e.matches;
-                            this.applyTheme();
-                        }
-                    });
 
                 await this.$nextTick();
 
@@ -365,7 +329,8 @@
                         email: this.newBooking.email.trim(),
                         mobil_test_drive: this.newBooking.car,
                         tanggal_booking: this.newBooking.bookingDate,
-                        supervisor_id: this.staffData.supervisors.find(s => s.name === this
+                        supervisor_user_id: this.staffData.supervisors.find(s => s.name ===
+                            this
                             .newBooking.spv)?.id,
                         security_id: this.staffData.securities.find(s => s.name === this
                             .newBooking.security)?.id
@@ -818,7 +783,19 @@
                     filtered = [...filtered].sort((a, b) => {
                         const spvA = (a.spv || '').toLowerCase();
                         const spvB = (b.spv || '').toLowerCase();
+
                         const comparison = spvA.localeCompare(spvB);
+                        return this.managementSPVSort === 'asc' ? comparison : -
+                            comparison;
+                    });
+                }
+
+                if (this.managementSPVSort) {
+                    filtered = [...filtered].sort((a, b) => {
+                        const salesA = (a.sales_name || '').toLowerCase();
+                        const salesB = (b.sales_name || '').toLowerCase();
+
+                        const comparison = salesA.localeCompare(salesB);
                         return this.managementSPVSort === 'asc' ? comparison : -
                             comparison;
                     });
@@ -977,7 +954,6 @@
             toggleTheme() {
                 this.darkMode = !this.darkMode;
                 localStorage.setItem('darkMode', this.darkMode.toString());
-                localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
                 this.applyTheme();
 
                 this.$nextTick(() => {
@@ -1138,12 +1114,10 @@
                             email: this.editingCustomer.email.trim(),
                             no_ktp: this.editingCustomer.ktp.trim(),
                             alamat: this.editingCustomer.address.trim(),
-                            supervisor_id: this.staffData.supervisors.find(s =>
+                            supervisor_user_id: this.staffData.supervisors.find(
+                                    s =>
                                     s.name === this.editingCustomer.assignedSPV)
-                                ?.id,
-                            security_id: this.staffData.securities.find(s => s
-                                .name === this.editingCustomer
-                                .assignedSecurity)?.id
+                                ?.id
                         })
                     });
 

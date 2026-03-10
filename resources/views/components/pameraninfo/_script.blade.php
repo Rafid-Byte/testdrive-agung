@@ -20,6 +20,131 @@
                 perawatan: 0,
                 selesai: 0
             },
+            currentPage: 1,
+            itemsPerPage: 10,
+            picSort: '',
+            carFilter: '',
+            dateSort: '',
+            dateFilter: '',
+
+            get filteredBookings() {
+                let result = [...this.bookings];
+
+                // Filter mobil
+                if (this.carFilter) {
+                    result = result.filter(b => b.mobil === this.carFilter);
+                }
+
+                // Filter tanggal acara spesifik (kalender)
+                if (this.dateFilter) {
+                    result = result.filter(b => {
+                        if (!b.tanggal_acara_raw) return false;
+                        return b.tanggal_acara_raw === this.dateFilter;
+                    });
+                }
+
+                // Sort PIC
+                if (this.picSort === 'asc') {
+                    result.sort((a, b) => (a.nama_pic || '').localeCompare(b.nama_pic || ''));
+                } else if (this.picSort === 'desc') {
+                    result.sort((a, b) => (b.nama_pic || '').localeCompare(a.nama_pic || ''));
+                }
+
+                // Sort tanggal acara
+                if (this.dateSort === 'asc') {
+                    result.sort((a, b) => new Date(a.tanggal_acara_raw || 0) - new Date(b.tanggal_acara_raw || 0));
+                } else if (this.dateSort === 'desc') {
+                    result.sort((a, b) => new Date(b.tanggal_acara_raw || 0) - new Date(a.tanggal_acara_raw || 0));
+                }
+
+                return result;
+            },
+
+            get paginatedBookings() {
+                const start = (this.currentPage - 1) * this.itemsPerPage;
+                return this.filteredBookings.slice(start, start + this.itemsPerPage);
+            },
+
+            get totalPages() {
+                return Math.ceil(this.filteredBookings.length / this.itemsPerPage);
+            },
+
+            get pageNumbers() {
+                const total = this.totalPages;
+                const current = this.currentPage;
+                const pages = [];
+
+                if (total <= 7) {
+                    for (let i = 1; i <= total; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    if (current > 3) pages.push('...');
+                    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+                        pages.push(i);
+                    }
+                    if (current < total - 2) pages.push('...');
+                    pages.push(total);
+                }
+                return pages;
+            },
+
+            sortPic(dir) {
+                this.picSort = dir;
+                this.currentPage = 1;
+            },
+
+            clearPicSort() {
+                this.picSort = '';
+                this.currentPage = 1;
+            },
+
+            filterByCar(car) {
+                this.carFilter = car;
+                this.currentPage = 1;
+            },
+
+            setDateSort(dir) {
+                this.dateSort = dir;
+                this.dateFilter = '';
+                this.currentPage = 1;
+            },
+
+            setDateFilter(val) {
+                this.dateFilter = val;
+                this.dateSort = '';
+                this.currentPage = 1;
+            },
+
+            clearDateFilter() {
+                this.dateFilter = '';
+                this.dateSort = '';
+                this.currentPage = 1;
+            },
+
+            clearAllFilters() {
+                this.picSort = '';
+                this.carFilter = '';
+                this.dateSort = '';
+                this.dateFilter = '';
+                this.searchQuery = '';
+                this.statusFilter = '';
+                this.currentPage = 1;
+                this.loadBookings();
+            },
+
+            goToPage(page) {
+                if (page >= 1 && page <= this.totalPages) {
+                    this.currentPage = page;
+                }
+            },
+
+            prevPage() {
+                if (this.currentPage > 1) this.goToPage(this.currentPage - 1);
+            },
+
+            nextPage() {
+                if (this.currentPage < this.totalPages) this.goToPage(this.currentPage + 1);
+            },
 
             init() {
                 // Baca dari 'theme' (appearance page) atau fallback ke 'darkMode' lama
@@ -109,9 +234,19 @@
                     const result = await response.json();
 
                     if (result.success) {
-                        this.bookings = (result.data || []).filter(booking => booking && booking.id);
+                        this.bookings = (result.data || [])
+                            .filter(booking => booking && booking.id)
+                            .map(b => ({
+                                ...b,
+                                tanggal_acara_raw: b.tanggal_acara_raw || b.tanggal_acara || ''
+                            }));
                         this.totalBookings = this.bookings.length;
                         this.calculateStatusCounts();
+                        this.currentPage = 1;
+                        this.picSort = '';
+                        this.carFilter = '';
+                        this.dateSort = '';
+                        this.dateFilter = '';
                     } else {
                         console.error('API returned error:', result.message);
                         this.showNotification('error', 'Gagal memuat data');
@@ -162,6 +297,8 @@
             },
 
             canUpdateStatus(booking) {
+                // Admin bisa update semua status
+                // Security hanya bisa update jika status BUKAN 'Diproses' (sudah Dikonfirmasi oleh BM)
                 if (this.userRole === 'admin') return true;
                 return booking.status !== 'Diproses';
             },

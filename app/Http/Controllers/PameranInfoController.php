@@ -66,6 +66,7 @@ class PameranInfoController extends Controller
                         'tanggal_mulai' => $booking->formatted_start_date,
                         'tanggal_selesai' => $booking->formatted_end_date,
                         'tanggal_acara' => $booking->formatted_event_date,
+                        'tanggal_acara_raw' => $booking->tanggal_acara ? \Carbon\Carbon::parse($booking->tanggal_acara)->format('Y-m-d') : null,
                         'lokasi_acara' => $booking->lokasi_acara,
                         'supervisor_name' => $booking->supervisor_name,
                         'security_name'   => '-',
@@ -151,9 +152,9 @@ class PameranInfoController extends Controller
                     'tanggal_mulai' => $booking->formatted_start_date,
                     'tanggal_selesai' => $booking->formatted_end_date,
                     'tanggal_acara' => $booking->formatted_event_date,
+                    'tanggal_acara_raw' => $booking->tanggal_acara ? \Carbon\Carbon::parse($booking->tanggal_acara)->format('Y-m-d') : null,
                     'lokasi_acara' => $booking->lokasi_acara,
                     'supervisor_name' => $booking->supervisor_name,
-                    'security_name'   => '-',
                     'sales_name'      => $booking->supervisor_name,
                     'status' => $booking->status,
                 ]
