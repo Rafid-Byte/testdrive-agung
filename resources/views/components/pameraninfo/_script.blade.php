@@ -298,8 +298,10 @@
 
             canUpdateStatus(booking) {
                 // Admin bisa update semua status
-                // Security hanya bisa update jika status BUKAN 'Diproses' (sudah Dikonfirmasi oleh BM)
                 if (this.userRole === 'admin') return true;
+                // Non-admin tidak bisa ubah status Dibatalkan
+                if (booking.status === 'Dibatalkan') return false;
+                // Security tidak bisa ubah jika masih Diproses
                 return booking.status !== 'Diproses';
             },
 

@@ -421,7 +421,9 @@
                                             'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400': booking
                                                 .status === 'Dikonfirmasi',
                                             'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400': booking
-                                                .status === 'Diproses'
+                                                .status === 'Diproses',
+                                            'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': booking
+                                                .status === 'Dibatalkan'
                                         }"
                                         x-text="booking.status || '-'">
                                     </span>
@@ -447,7 +449,8 @@
                                                 'text-green-700 bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 cursor-pointer' :
                                                 'text-gray-400 bg-gray-100 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed opacity-60'"
                                             class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md transition-colors"
-                                            :title="!canUpdateStatus(booking) ?
+                                            :title="booking.status === 'Dibatalkan' ? 'Booking telah dibatalkan' : !
+                                                canUpdateStatus(booking) ?
                                                 'Status belum dapat diubah — menunggu konfirmasi Branch Manager' :
                                                 'Update status'">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
@@ -526,7 +529,8 @@
                                 'bg-yellow-100 text-yellow-800': booking.status === 'Perawatan',
                                 'bg-green-100 text-green-800': booking.status === 'Selesai',
                                 'bg-indigo-100 text-indigo-800': booking.status === 'Dikonfirmasi',
-                                'bg-purple-100 text-purple-800': booking.status === 'Diproses'
+                                'bg-purple-100 text-purple-800': booking.status === 'Diproses',
+                                'bg-red-100 text-red-800': booking.status === 'Dibatalkan'
                             }"
                             x-text="booking.status || '-'">
                         </span>

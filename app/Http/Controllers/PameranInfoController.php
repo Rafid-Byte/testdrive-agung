@@ -24,7 +24,8 @@ class PameranInfoController extends Controller
                     'Diproses',
                     'Sedang Pameran',
                     'Perawatan',
-                    'Selesai'
+                    'Selesai',
+                    'Dibatalkan'
                 ])
                 ->orderBy('tanggal_booking', 'desc');
 
